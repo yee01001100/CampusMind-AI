@@ -10,7 +10,7 @@ Meoo 想天开——AI互动应用赛道
 
 项目定位：
 
-基于开源Agent框架DeepTutor进行二次开发，将原有AI学习辅助能力扩展为面向大学生校园生活的综合智能助手。
+基于开源Agent框架DeepTutor（https://github.com/HKUDS/DeepTutor）进行二次开发，将原有AI学习辅助能力扩展为面向大学生校园生活的综合智能助手。
 
 核心目标：
 
