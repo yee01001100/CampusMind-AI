@@ -1,1 +1,0 @@
-"""CampusMind test package."""

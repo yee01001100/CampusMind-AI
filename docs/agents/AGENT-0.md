@@ -53,15 +53,15 @@ Agent 0 只将最终集成分支推到目标仓库的新预览分支，未经用
 示例流程：
 
 ```powershell
-git fetch origin --tags
-git switch -c agent/0-integration day0-baseline
+git fetch origin
+git switch -c agent/0-integration <共同基线>
 git merge --no-ff origin/agent/2-data-rag
 git merge --no-ff origin/agent/3-service-api
 git merge --no-ff origin/agent/1-runtime
 git merge --no-ff origin/agent/4-web
 ```
 
-实际分支名以远程为准。`day0-baseline` 必须存在，并且是四个子 Agent 最终提交的共同祖先。
+实际分支名和共同基线以远程为准，不得猜测不存在的提交。
 
 ## Allowed Work
 

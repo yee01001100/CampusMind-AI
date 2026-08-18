@@ -25,7 +25,6 @@ campusmind/services/reminder/
 apps/api/
 tests/services/
 tests/api/
-requirements/agent-3.txt
 HANDOFF-agent3.md
 ```
 
@@ -41,10 +40,6 @@ skills/
 apps/web/
 data/
 contracts/SHARED_CONTRACT.md
-pyproject.toml
-requirements/agent-1.txt
-requirements/agent-2.txt
-tests/contract/
 ```
 
 ## Must Implement
@@ -147,15 +142,14 @@ POST  /api/v1/chat
 
 ## Work Sequence
 
-1. 从 `day0-baseline` 创建本角色分支 `agent/3-service-api`。
-2. 使用 Python 3.12 运行 `python scripts/check_day0.py`。
-3. 使用内存 Repository Stub 建立 Service 接口。
-4. 完成 Notice、Course、Task、Reminder Service。
-5. 实现 FastAPI 路由和异常映射。
-6. 生成并检查 OpenAPI。
-7. 覆盖正常、空数据、错误和重复请求。
-8. 运行验收命令。
-9. 创建 `HANDOFF-agent3.md` 后停止。
+1. 创建本角色分支 `agent/3-service-api`。
+2. 使用内存 Repository Stub 建立 Service 接口。
+3. 完成 Notice、Course、Task、Reminder Service。
+4. 实现 FastAPI 路由和异常映射。
+5. 生成并检查 OpenAPI。
+6. 覆盖正常、空数据、错误和重复请求。
+7. 运行验收命令。
+8. 创建 `HANDOFF-agent3.md` 后停止。
 
 ## Stub / Mock
 

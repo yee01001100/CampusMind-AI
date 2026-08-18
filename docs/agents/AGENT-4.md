@@ -30,9 +30,6 @@ skills/
 apps/api/
 data/
 contracts/SHARED_CONTRACT.md
-pyproject.toml
-requirements/
-tests/contract/
 ```
 
 不得为了前端方便修改后端字段。发现契约问题时记录到 HANDOFF，并在 `apps/web/src/api/` 内做最小适配。
@@ -142,15 +139,14 @@ Mock 必须覆盖：
 
 ## Work Sequence
 
-1. 从 `day0-baseline` 创建本角色分支 `agent/4-web`。
-2. 使用 Python 3.12 运行 `python scripts/check_day0.py`。
-3. 建立 Vite/React/TypeScript 项目。
-4. 建立类型、API Client 和完整 Mock。
-5. 完成今日简报、通知、课表、待办和 Chat 页面。
-6. 补齐加载、空、错误和超时状态。
-7. 完成响应式和可访问性检查。
-8. 运行验收命令与构建。
-9. 创建 `HANDOFF-agent4.md` 后停止。
+1. 创建本角色分支 `agent/4-web`。
+2. 建立 Vite/React/TypeScript 项目。
+3. 建立类型、API Client 和完整 Mock。
+4. 完成今日简报、通知、课表、待办和 Chat 页面。
+5. 补齐加载、空、错误和超时状态。
+6. 完成响应式和可访问性检查。
+7. 运行验收命令与构建。
+8. 创建 `HANDOFF-agent4.md` 后停止。
 
 ## Required Tests
 

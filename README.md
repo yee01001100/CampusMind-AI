@@ -62,7 +62,7 @@ flowchart TB
     A0 --> QA["Debug + UI + Final Acceptance"]
 ```
 
-- **Day 0：** 人或主 Agent 冻结契约、项目骨架和 `day0-baseline` 标签，之后不参与并行施工。
+- **Day 0：** 人或主 Agent 冻结契约和项目骨架，之后不参与并行施工。
 - **Day 1–4：** 4 名组员分别与 AI 在独立分支或 worktree 中完成 Agent 1–4 模块。
 - **Day 4 18:00：** 功能冻结，四个子 Agent 提交 HANDOFF 后停止。
 - **Day 5–8：** 组长与主 AI 组成 Agent 0，单独整合、修 Bug、改进 UI、执行最终验收和发布。
@@ -95,13 +95,9 @@ flowchart TB
 
 ```text
 CampusMind-AI/
-├─ .env.example
-├─ .gitignore
 ├─ README.md
-├─ pyproject.toml
 ├─ contracts/
-│  ├─ SHARED_CONTRACT.md
-│  └─ examples/
+│  └─ SHARED_CONTRACT.md
 ├─ docs/
 │  ├─ agents/
 │  │  ├─ AGENT-0.md
@@ -124,28 +120,8 @@ CampusMind-AI/
 ├─ skills/campusmind/
 ├─ data/demo/
 ├─ data/knowledge/
-├─ requirements/
-│  ├─ agent-1.txt
-│  ├─ agent-2.txt
-│  └─ agent-3.txt
-├─ scripts/
-│  ├─ check_contracts.py
-│  └─ check_day0.py
 └─ tests/
 ```
-
-## Day 0 基线检查
-
-所有 Agent 开工前都必须在 Python 3.12 环境运行：
-
-```powershell
-python --version
-python scripts/check_day0.py
-python -m pip install -e ".[dev]"
-python -m pytest tests/contract -q
-```
-
-`check_day0.py` 只验证共同目录、根配置、契约样例、时间格式和安全规则，不实现任何子 Agent 的业务代码。
 
 ## 分支与远程仓库
 
@@ -157,13 +133,6 @@ agent/2-data-rag
 agent/3-service-api
 agent/4-web
 agent/0-integration
-```
-
-所有 Agent 1–4 分支必须从同一个 `day0-baseline` 标签创建，不得从各自本地的不同提交开工：
-
-```powershell
-git fetch origin --tags
-git switch -c agent/N-... day0-baseline
 ```
 
 如果使用独立施工仓库：
@@ -191,7 +160,7 @@ Git 操作和 PR 约束以 [Shared Contract](contracts/SHARED_CONTRACT.md#git-�
 - [x] 明确产品目标和 MVP 场景
 - [x] 明确 4 个子 Agent + 1 个主 Agent 的执行方式
 - [x] 拆分 README、Shared Contract、Agent Packets、HANDOFF 和最终验收
-- [x] 创建 Day 0 项目骨架和可执行契约测试
+- [ ] 创建 Day 0 项目骨架和可执行契约测试
 - [ ] Agent 1–4 并行施工
 - [ ] Agent 0 集成、Debug 和 UI 改进
 - [ ] 最终发布

@@ -1,1 +1,0 @@
-"""Executable Shared Contract checks."""

@@ -13,8 +13,6 @@
 - [ ] 四个 HANDOFF 都包含分支和最终 SHA
 - [ ] 所有 Stub/Mock 有替换说明
 - [ ] 集成分支为 `agent/0-integration`
-- [ ] `day0-baseline` 标签存在且是四个子 Agent 分支的共同祖先
-- [ ] `python scripts/check_day0.py` 在 Python 3.12 下通过
 
 ## 2. 仓库安全
 

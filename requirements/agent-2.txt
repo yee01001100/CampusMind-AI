@@ -1,1 +1,0 @@
-# Agent 2 records verified Pydantic/data/RAG dependencies here.
