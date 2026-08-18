@@ -58,6 +58,7 @@ HANDOFF-agent4.md
 - [ ] 使用 Shared Contract 公共字段
 - [ ] 未创建第二套同义字段
 - [ ] 未修改 Must NOT modify 目录
+- [ ] 分支从 `day0-baseline` 创建
 - [ ] 时区与时间格式正确
 - [ ] 未提交真实个人数据或密钥
 

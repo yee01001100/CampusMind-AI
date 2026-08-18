@@ -25,6 +25,7 @@ data/demo/
 data/knowledge/
 tests/storage/
 tests/rag/
+requirements/agent-2.txt
 HANDOFF-agent2.md
 ```
 
@@ -38,6 +39,10 @@ campusmind/services/
 apps/api/
 apps/web/
 contracts/SHARED_CONTRACT.md
+pyproject.toml
+requirements/agent-1.txt
+requirements/agent-3.txt
+tests/contract/
 ```
 
 ## Must Implement
@@ -130,14 +135,15 @@ is_demo
 
 ## Work Sequence
 
-1. 创建本角色分支 `agent/2-data-rag`。
-2. 实现公共 Pydantic 模型。
-3. 建立 SQLite Schema 和 Repository。
-4. 编写可重复初始化和演示数据导入。
-5. 建立 RAG 资料与检索测试。
-6. 覆盖重复数据、空库、重启和无来源场景。
-7. 运行验收命令。
-8. 创建 `HANDOFF-agent2.md` 后停止。
+1. 从 `day0-baseline` 创建本角色分支 `agent/2-data-rag`。
+2. 使用 Python 3.12 运行 `python scripts/check_day0.py`。
+3. 实现公共 Pydantic 模型。
+4. 建立 SQLite Schema 和 Repository。
+5. 编写可重复初始化和演示数据导入。
+6. 建立 RAG 资料与检索测试。
+7. 覆盖重复数据、空库、重启和无来源场景。
+8. 运行验收命令。
+9. 创建 `HANDOFF-agent2.md` 后停止。
 
 ## Independence Rules
 

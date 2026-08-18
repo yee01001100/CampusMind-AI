@@ -23,6 +23,7 @@ campusmind/tools/
 campusmind/integrations/deeptutor/
 apps/api/agent/
 tests/agent/
+requirements/agent-1.txt
 HANDOFF-agent1.md
 ```
 
@@ -39,6 +40,10 @@ contracts/SHARED_CONTRACT.md
 docs/agents/AGENT-2.md
 docs/agents/AGENT-3.md
 docs/agents/AGENT-4.md
+pyproject.toml
+requirements/agent-2.txt
+requirements/agent-3.txt
+tests/contract/
 ```
 
 禁止修改 DeepTutor 核心来规避扩展接口。优先使用 Skill、MCP Tool、公开 SDK 或适配层。
@@ -99,14 +104,15 @@ complete_task
 
 ## Work Sequence
 
-1. 创建本角色分支 `agent/1-runtime`。
-2. 建立最小 DeepTutor 启动验证。
-3. 使用 Fake Service 注册一个 Tool 并保存调用轨迹。
-4. 实现五个 Tool 的适配层。
-5. 编写 CampusMind Skill。
-6. 增加错误、超时、空数据和确认流程测试。
-7. 运行验收命令。
-8. 创建 `HANDOFF-agent1.md` 后停止。
+1. 从 `day0-baseline` 创建本角色分支 `agent/1-runtime`。
+2. 使用 Python 3.12 运行 `python scripts/check_day0.py`。
+3. 建立最小 DeepTutor 启动验证。
+4. 使用 Fake Service 注册一个 Tool 并保存调用轨迹。
+5. 实现五个 Tool 的适配层。
+6. 编写 CampusMind Skill。
+7. 增加错误、超时、空数据和确认流程测试。
+8. 运行验收命令。
+9. 创建 `HANDOFF-agent1.md` 后停止。
 
 ## Stub / Mock
 

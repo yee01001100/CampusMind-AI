@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "data": {
+    "date": "2026-08-18",
+    "courses": [],
+    "tasks": [],
+    "notices": [],
+    "conflicts": [],
+    "suggestions": []
+  },
+  "error": null,
+  "request_id": "req-demo-success-001"
+}

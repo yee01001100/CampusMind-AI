@@ -1,0 +1,78 @@
+{
+  "notice": {
+    "id": "notice-demo-001",
+    "title": "模拟四六级报名通知",
+    "raw_text": "【模拟数据】2026 级本科生请在 8 月 22 日 18:00 前完成四六级报名。",
+    "audience": [
+      "2026级本科生"
+    ],
+    "published_at": "2026-08-18T08:00:00+08:00",
+    "deadline": "2026-08-22T18:00:00+08:00",
+    "actions": [
+      "登录模拟教务系统完成报名"
+    ],
+    "priority": "high",
+    "source_type": "demo",
+    "source_ref": "demo://notices/notice-demo-001",
+    "confidence": 0.96,
+    "needs_confirmation": false,
+    "created_at": "2026-08-18T08:05:00+08:00"
+  },
+  "course": {
+    "id": "course-demo-001",
+    "student_id": "student-demo-001",
+    "name": "人工智能导论",
+    "teacher": "模拟教师",
+    "weekday": 2,
+    "start_time": "10:00",
+    "end_time": "11:35",
+    "location": "模拟教学楼 A101",
+    "start_week": 1,
+    "end_week": 16,
+    "week_pattern": "all",
+    "custom_weeks": []
+  },
+  "task": {
+    "id": "task-demo-001",
+    "student_id": "student-demo-001",
+    "title": "完成模拟四六级报名",
+    "description": "来自模拟通知 notice-demo-001",
+    "task_type": "registration",
+    "priority": "high",
+    "status": "pending",
+    "due_at": "2026-08-22T18:00:00+08:00",
+    "source_notice_id": "notice-demo-001",
+    "dedupe_key": "student-demo-001:notice-demo-001:registration",
+    "created_at": "2026-08-18T08:06:00+08:00",
+    "completed_at": null
+  },
+  "student_profile": {
+    "id": "student-demo-001",
+    "name": "模拟学生",
+    "major": "计算机科学与技术",
+    "grade": "2026",
+    "timezone": "Asia/Shanghai",
+    "quiet_hours_start": "23:00",
+    "quiet_hours_end": "07:00",
+    "interests": [
+      "人工智能",
+      "校园竞赛"
+    ],
+    "reminder_preferences": {
+      "registration": [
+        "P3D",
+        "P1D",
+        "PT3H"
+      ]
+    }
+  },
+  "reminder": {
+    "id": "reminder-demo-001",
+    "task_id": "task-demo-001",
+    "trigger_at": "2026-08-21T18:00:00+08:00",
+    "channel": "in_app",
+    "status": "pending",
+    "sent_at": null,
+    "failure_reason": null
+  }
+}

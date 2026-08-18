@@ -40,6 +40,31 @@
 - 修改 DeepTutor 核心代码来规避扩展接口。
 - 引入与当前目标无关的大型基础设施。
 
+### 2.1 Day 0 冻结基线
+
+以下文件由 Stage 0 建立，Agent 1–4 只读取，不并行修改：
+
+```text
+.env.example
+.gitignore
+pyproject.toml
+contracts/examples/
+requirements/README.md
+scripts/check_contracts.py
+scripts/check_day0.py
+tests/contract/
+```
+
+依赖冲突按文件隔离：
+
+- Agent 1 只修改 `requirements/agent-1.txt`。
+- Agent 2 只修改 `requirements/agent-2.txt`。
+- Agent 3 只修改 `requirements/agent-3.txt`。
+- Agent 4 只在 `apps/web/package.json` 管理前端依赖。
+- Agent 0 集成时安装三份 Python 依赖、解决版本冲突，并将最终运行依赖整理回 `pyproject.toml`。
+
+Day 0 的 JSON 仅是 Shared Contract 的可执行样例，不是 Pydantic、数据库、API 或前端实现。Agent 2/3/4 仍须在各自目录完成真实实现。
+
 ## 3. 全局时间规则
 
 - 所有后端时间使用带时区 ISO 8601，例如 `2026-08-18T18:00:00+08:00`。
@@ -262,10 +287,10 @@ Agent 3 可以新增更具体的错误码，但不得改变以上含义。新增
 
 | Agent | Owns | Must NOT modify |
 | --- | --- | --- |
-| 1 | `skills/`、`campusmind/tools/`、`campusmind/integrations/`、`tests/agent/` | `domain/`、`storage/`、`services/`、`apps/web/` |
-| 2 | `campusmind/domain/`、`storage/`、`repositories/`、`data/`、`tests/storage/`、`tests/rag/` | `skills/`、`services/`、`apps/api/`、`apps/web/` |
-| 3 | `campusmind/services/`、`apps/api/`、`tests/services/`、`tests/api/` | `domain/`、`storage/`、`skills/`、`apps/web/` |
-| 4 | `apps/web/` | `campusmind/`、`skills/`、`apps/api/` |
+| 1 | `skills/`、`campusmind/tools/`、`campusmind/integrations/`、`apps/api/agent/`、`tests/agent/`、`requirements/agent-1.txt` | `domain/`、`storage/`、`services/`、`apps/web/`、`apps/api/` 中除 `agent/` 外的内容 |
+| 2 | `campusmind/domain/`、`storage/`、`repositories/`、`data/`、`tests/storage/`、`tests/rag/`、`requirements/agent-2.txt` | `skills/`、`services/`、`apps/api/`、`apps/web/` |
+| 3 | `campusmind/services/`、`apps/api/`（不含 `agent/`）、`tests/services/`、`tests/api/`、`requirements/agent-3.txt` | `domain/`、`storage/`、`skills/`、`apps/web/`、`apps/api/agent/` |
+| 4 | `apps/web/` | `campusmind/`、`skills/`、`apps/api/`、`requirements/` |
 | 0 | 集成所需全项目 | 不得无必要重写已通过测试的模块 |
 
 ## 10. 数据与安全契约
@@ -292,6 +317,9 @@ agent/0-integration
 规则：
 
 - 每个 Agent 使用独立 worktree 或独立克隆。
+- Stage 0 验证通过后创建并推送 `day0-baseline` 标签。
+- Agent 1–4 必须从同一个 `day0-baseline` 标签创建分支。
+- 子 Agent 开工第一条验收命令是 `python scripts/check_day0.py`。
 - 子 Agent 不得直接推送目标仓库 `main`。
 - 子 Agent 只提交自己拥有的文件和 HANDOFF。
 - Commit 使用 `feat:`、`fix:`、`test:`、`docs:` 等清晰前缀。
