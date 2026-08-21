@@ -1,1 +1,4 @@
-# Agent 1 records verified DeepTutor/runtime dependencies here.
+# Agent 1 adds no required PyPI dependency.
+# DeepTutor is connected through its public extension host instead of vendored
+# or patched core code. DeepSeek uses its OpenAI-compatible HTTPS endpoint via
+# the Python 3.12 standard library; tests inject a fake JSON transport.
