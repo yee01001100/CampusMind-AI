@@ -1,0 +1,1 @@
+"""Integrated CampusMind acceptance tests."""

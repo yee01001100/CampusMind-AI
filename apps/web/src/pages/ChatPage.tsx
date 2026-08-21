@@ -107,12 +107,12 @@ export function ChatPage() {
         <aside className="chat-context" aria-label="当前上下文">
           <div><span>当前上下文</span><h3>Agent 能看到什么</h3></div>
           <dl>
-            <div><dt><Icon name="calendar" />今日课表</dt><dd>2 节</dd></div>
-            <div><dt><Icon name="check" />未完成待办</dt><dd>2 项</dd></div>
-            <div><dt><Icon name="book" />校园资料库</dt><dd>12 份模拟资料</dd></div>
+            <div><dt><Icon name="calendar" />今日课表</dt><dd>{apiClient.mode === 'real' ? '实时读取' : '2 节'}</dd></div>
+            <div><dt><Icon name="check" />未完成待办</dt><dd>{apiClient.mode === 'real' ? '实时读取' : '2 项'}</dd></div>
+            <div><dt><Icon name="book" />校园资料库</dt><dd>本地模拟资料</dd></div>
           </dl>
           <div className="privacy-note"><Icon name="source" /><p><b>数据边界</b><span>前端不会接触模型密钥，也不会读取校园账号、Cookie 或密码。</span></p></div>
-          <div className="suggested-prompts"><h4>可以这样问</h4>{['我今天最需要先做什么？', '奖学金材料什么时候截止？', '下一节课在哪里？'].map((prompt) => <button key={prompt} onClick={() => { setDraft(prompt); }}>{prompt}<Icon name="arrow" /></button>)}</div>
+          <div className="suggested-prompts"><h4>可以这样问</h4>{['我今天最需要先做什么？', '学校规定考试管理是什么？', '下一节课在哪里？'].map((prompt) => <button key={prompt} onClick={() => { setDraft(prompt); }}>{prompt}<Icon name="arrow" /></button>)}</div>
         </aside>
       </div>
     </section>

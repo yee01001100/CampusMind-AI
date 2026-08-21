@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from inspect import isawaitable
 from datetime import date, datetime
 from typing import Any, Literal
 from uuid import uuid4
@@ -13,6 +14,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from campusmind.services.course import CourseService
 from campusmind.services.notice import NoticeParseCommand, NoticeService
@@ -24,7 +26,12 @@ from .chat import ChatRequest, RuleBasedChatFacade
 from .fakes import InMemoryRepository
 
 SHANGHAI = ZoneInfo("Asia/Shanghai")
-DEV_ORIGINS = ("http://localhost:5173", "http://127.0.0.1:5173")
+DEV_ORIGINS = (
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
+)
 
 
 def shanghai_now() -> datetime:
@@ -70,7 +77,7 @@ def failure(
 
 
 class ServiceContainer:
-    def __init__(self, repository: InMemoryRepository) -> None:
+    def __init__(self, repository: Any) -> None:
         self.repository = repository
         self.tasks = TaskService(repository)
         self.courses = CourseService(repository)
@@ -80,8 +87,8 @@ class ServiceContainer:
 
 def create_app(
     *,
-    repository: InMemoryRepository | None = None,
-    chat_facade: RuleBasedChatFacade | None = None,
+    repository: Any | None = None,
+    chat_facade: Any | None = None,
     clock: Callable[[], datetime] = shanghai_now,
 ) -> FastAPI:
     repo = repository or InMemoryRepository()
@@ -131,6 +138,18 @@ def create_app(
             message="输入字段无效",
             details={"fields": fields},
             status_code=422,
+        )
+
+    @api.exception_handler(StarletteHTTPException)
+    async def http_error_handler(request: Request, exc: StarletteHTTPException):
+        codes = {404: "NOT_FOUND", 405: "METHOD_NOT_ALLOWED"}
+        messages = {404: "请求的接口不存在", 405: "请求方法不受支持"}
+        return failure(
+            request,
+            code=codes.get(exc.status_code, "HTTP_ERROR"),
+            message=messages.get(exc.status_code, str(exc.detail)),
+            details={},
+            status_code=exc.status_code,
         )
 
     @api.exception_handler(Exception)
@@ -261,7 +280,10 @@ def create_app(
     async def chat_endpoint(request: Request, body: ChatRequest):
         now = clock()
         brief = build_brief(body.student_id, now.date(), now)
-        return success(request, chat.reply(body, jsonable_encoder(brief)))
+        response = chat.reply(body, jsonable_encoder(brief))
+        if isawaitable(response):
+            response = await response
+        return success(request, response)
 
     return api
 

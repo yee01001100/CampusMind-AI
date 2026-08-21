@@ -100,3 +100,25 @@ def test_quiet_hours_duplicate_recovery_failure_retry_and_completion(repository)
     assert completed.status == "completed"
     assert reminders.due(student_id=task.student_id, at=task.due_at) == []
     assert all(item.status == "skipped" for item in repository.list_reminders())
+
+
+def test_restoring_task_reactivates_future_skipped_reminders(repository) -> None:
+    tasks = TaskService(repository)
+    reminders = ReminderService(repository)
+    task = create_task(
+        tasks,
+        key="restore-reminders",
+        due=NOW + timedelta(days=10),
+        task_type="assignment",
+    ).task
+    scheduled = reminders.schedule(task, now=NOW)
+
+    tasks.update(task.id, TaskPatch(status="completed"), now=NOW)
+    reminders.cancel_for_task(task.id)
+    restored_task = tasks.update(
+        task.id, TaskPatch(status="pending"), now=NOW + timedelta(minutes=1)
+    )
+    restored = reminders.schedule(restored_task, now=NOW + timedelta(minutes=1))
+
+    assert {item.id for item in restored} == {item.id for item in scheduled}
+    assert all(item.status == "pending" for item in repository.list_reminders())

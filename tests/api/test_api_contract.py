@@ -179,6 +179,16 @@ def test_unknown_exception_is_sanitized(api_repository, monkeypatch) -> None:
     assert "traceback" not in response.text.lower()
 
 
+def test_framework_404_and_405_use_the_shared_error_envelope(client) -> None:
+    missing = client.get("/api/v1/not-a-real-route")
+    wrong_method = client.get("/api/v1/chat")
+
+    assert missing.status_code == 404
+    assert assert_envelope(missing, ok=False)["error"]["code"] == "NOT_FOUND"
+    assert wrong_method.status_code == 405
+    assert assert_envelope(wrong_method, ok=False)["error"]["code"] == "METHOD_NOT_ALLOWED"
+
+
 def test_cors_is_limited_to_documented_dev_origins(client) -> None:
     allowed = client.options(
         "/api/v1/tasks",
@@ -188,6 +198,14 @@ def test_cors_is_limited_to_documented_dev_origins(client) -> None:
         },
     )
     assert allowed.headers["access-control-allow-origin"] == "http://localhost:5173"
+    qa_allowed = client.options(
+        "/api/v1/tasks",
+        headers={
+            "Origin": "http://127.0.0.1:4173",
+            "Access-Control-Request-Method": "POST",
+        },
+    )
+    assert qa_allowed.headers["access-control-allow-origin"] == "http://127.0.0.1:4173"
     blocked = client.options(
         "/api/v1/tasks",
         headers={

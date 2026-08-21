@@ -5,13 +5,19 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "campusmind-ai"
 version = "0.0.0"
-description = "CampusMind AI Day 0 collaboration baseline"
+description = "CampusMind AI local campus assistant MVP"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
-dependencies = []
+dependencies = [
+    "fastapi>=0.115,<1",
+    "pydantic>=2.10,<3",
+    "tzdata>=2026.1",
+    "uvicorn[standard]>=0.34,<1",
+]
 
 [project.optional-dependencies]
 dev = [
+    "httpx>=0.28,<1",
     "pytest>=8.3,<9",
 ]
 

@@ -2,13 +2,14 @@
 
 # CampusMind AI
 
-### 基于 Agent 的私人校园智能体
+### 基于 Agent 的本地校园智能事务助手
 
-让 AI 理解校园通知、整理课程与任务，并在正确的时间主动提醒学生。
+把校园通知变成待办，统一查看课表与提醒，并用带来源的本地资料回答校园问题。
 
-[![Status](https://img.shields.io/badge/status-agent%20ready-f59e0b)](#当前状态)
-[![DeepTutor](https://img.shields.io/badge/powered%20by-DeepTutor-2563eb)](https://github.com/HKUDS/DeepTutor)
-[![Python](https://img.shields.io/badge/Python-3.12-3776ab?logo=python&logoColor=white)](contracts/SHARED_CONTRACT.md)
+[![Status](https://img.shields.io/badge/status-integrated%20MVP-0f6f76)](#当前状态)
+[![Python](https://img.shields.io/badge/Python-3.12-3776ab?logo=python&logoColor=white)](pyproject.toml)
+[![Web](https://img.shields.io/badge/Web-React%20%2B%20Vite-646cff)](apps/web)
+[![Timezone](https://img.shields.io/badge/timezone-Asia%2FShanghai-334155)](contracts/SHARED_CONTRACT.md)
 
 **Meoo 想天开 · AI 互动应用赛道参赛项目**
 
@@ -16,189 +17,205 @@
 
 ---
 
-## 项目目标
+## 当前状态
 
-CampusMind AI 基于 [DeepTutor](https://github.com/HKUDS/DeepTutor) 扩展校园领域能力，不重写其核心。MVP 必须真实跑通：
+`agent/0-integration` 已完成四个子模块的合并和主 Agent 联调。当前版本可以在一台 Windows 电脑上运行完整 MVP：
 
-1. “今天有什么事情？” → Agent → Tool → Service → SQLite → H5。
-2. 校园通知 → 字段提取 → 用户确认 → 创建任务 → 主动提醒。
-3. 校园问题 → RAG 检索 → 返回答案与资料来源。
-4. 临期任务 → 触发提醒 → 完成任务后停止提醒。
+- 今日简报：Agent 调用真实 Tool，经 Service 从 SQLite 读取课表、任务和通知。
+- 通知转任务：解析通知、标记不确定字段、人工确认、创建任务并去重。
+- 校园资料问答：本地 RAG 检索，答案显示资料标题、日期和来源；无可靠来源时拒绝编造。
+- 提醒闭环：按任务类型生成提醒，完成或取消任务后停止提醒，恢复任务时恢复未来提醒。
+- H5：React + Vite，支持 `375 × 812`、`1366 × 768`、`1440 × 900`。
+- 开发模式：默认不需要模型 Key，使用可验证的 `local-rules` Runtime。
 
-所有功能在通过测试前都视为设计目标，不代表已经交付。
+演示数据全部标记为“模拟”，不连接真实教务系统，也不读取校园账号、Cookie 或密码。
 
-## 先读这里
+## 五人如何协作
 
-本仓库按 **5 名成员 + 5 个 AI 搭档** 组织：4 名组员分别与 AI 组成 Agent 1–4，1 名组长与主 AI 组成 Agent 0。每个编号表示一个“成员 + AI”的人机施工搭档，而不是让 AI 脱离成员单独决定。成员负责确认范围、检查输出、运行验收和提交分支；AI 负责持续施工、自检和生成 HANDOFF。所有搭档遵守同一套目录、分支、测试和交接规则。不要让 Agent 0 与 Agent 1–4 同时修改代码。
+本项目按 **5 名成员 + 5 个 AI 搭档** 组织。四名组员各自与 AI 承担一个子 Agent，一名组长与主 AI 承担 Agent 0。成员负责确认范围、复核、验收和提交；AI 负责在约束内施工、自测和生成 HANDOFF。
 
-| 身份 | 必读文件 | 只执行 |
-| --- | --- | --- |
-| 所有 Agent | 本 README + [Shared Contract](contracts/SHARED_CONTRACT.md) | 全局契约与禁止事项 |
-| 组员 + AI（Agent 1） | [AGENT-1.md](docs/agents/AGENT-1.md) | DeepTutor / Skill / MCP / Runtime |
-| 组员 + AI（Agent 2） | [AGENT-2.md](docs/agents/AGENT-2.md) | Data / SQLite / RAG |
-| 组员 + AI（Agent 3） | [AGENT-3.md](docs/agents/AGENT-3.md) | Campus Service / FastAPI |
-| 组员 + AI（Agent 4） | [AGENT-4.md](docs/agents/AGENT-4.md) | React / Vite / H5 |
-| 组长 + 主 AI（Agent 0） | [AGENT-0.md](docs/agents/AGENT-0.md) + 四份 HANDOFF | 合并、Debug、UI 改进与发布 |
+| 人机搭档 | 负责范围 | 分支 | 状态 |
+| --- | --- | --- | --- |
+| Agent 1 | Runtime、Tool、DeepTutor/DeepSeek 适配 | `agent/1-runtime` | 完成 |
+| Agent 2 | Domain、SQLite、演示数据、RAG | `agent/2-data-rag` | 完成 |
+| Agent 3 | Service、FastAPI、错误响应 | `agent/3-service-api` | 完成 |
+| Agent 4 | React/Vite H5、Mock、响应式与浏览器 QA | `agent/4-web` | 完成 |
+| Agent 0 | 合并、真实联调、Debug、UI 和发布验收 | `agent/0-integration` | 完成 |
 
-每个子 Agent 完成后，必须按 [HANDOFF 模板](docs/HANDOFF_TEMPLATE.md) 创建自己的交接文件。最终结果按 [FINAL ACCEPTANCE](docs/FINAL_ACCEPTANCE.md) 验收。
+每个角色的详细要求在 [`docs/agents`](docs/agents)，四份实际交接在仓库根目录的 `HANDOFF-agent1.md` 到 `HANDOFF-agent4.md`。完整集成证据见 [`docs/INTEGRATION_REPORT.md`](docs/INTEGRATION_REPORT.md)。
 
-## 执行顺序
+## 架构
 
 ```mermaid
-flowchart TB
-    C["Stage 0<br/>冻结 Shared Contract"]
-    C --> A1["Agent 1<br/>DeepTutor"]
-    C --> A2["Agent 2<br/>Data / RAG"]
-    C --> A3["Agent 3<br/>Service / API"]
-    C --> A4["Agent 4<br/>Web"]
-    A1 --> H1["HANDOFF-agent1.md"]
-    A2 --> H2["HANDOFF-agent2.md"]
-    A3 --> H3["HANDOFF-agent3.md"]
-    A4 --> H4["HANDOFF-agent4.md"]
-    H1 --> A0["Agent 0<br/>Integrator"]
-    H2 --> A0
-    H3 --> A0
-    H4 --> A0
-    A0 --> QA["Debug + UI + Final Acceptance"]
+flowchart LR
+    Web["React / Vite H5"] --> API["FastAPI 统一 API"]
+    API --> Services["Notice / Task / Course / Reminder Services"]
+    API --> Runtime["Agent Runtime + 5 Tools"]
+    Runtime --> Services
+    Services --> SQLite["SQLite Repository"]
+    Runtime --> RAG["本地词法 RAG"]
+    RAG --> SQLite
+    Runtime -. "可选" .-> DeepSeek["DeepSeek Transport"]
 ```
 
-- **Day 0：** 人或主 Agent 冻结契约、项目骨架和 `day0-baseline` 标签，之后不参与并行施工。
-- **Day 1–4：** 4 名组员分别与 AI 在独立分支或 worktree 中完成 Agent 1–4 模块。
-- **Day 4 18:00：** 功能冻结，四个子 Agent 提交 HANDOFF 后停止。
-- **Day 5–8：** 组长与主 AI 组成 Agent 0，单独整合、修 Bug、改进 UI、执行最终验收和发布。
+正式集成入口是 `apps.api.integration:app`。`apps.api.main:app` 只用于 Agent 3 的可替换内存仓库切片，不代表完整项目。
 
-## 不可违反的规则
+## Windows 快速启动
 
-详细规则见 [Shared Contract](contracts/SHARED_CONTRACT.md)，这里保留最关键部分：
+### 1. 准备环境
 
-- Python `3.12`；后端 FastAPI + Pydantic；数据库 SQLite；前端 React + Vite + TypeScript。
-- 时区固定为 `Asia/Shanghai`，时间使用带时区的 ISO 8601。
-- 公共模型为 `Notice`、`Course`、`Task`、`StudentProfile`、`Reminder`。
-- 子 Agent 只能修改自己 `Owns` 的目录。
-- 缺少其他模块时使用 Shared Contract 中的 Stub/Mock，不得越界代写。
-- 禁止自行修改公共字段、API、错误码或技术栈。
-- 禁止提交真实个人数据、校园账号、密码和 API Key。
-- 不允许以“框架已建立”“主体完成”“接下来可以”为结束理由。
-- 必须实际运行验收命令，测试通过并创建 HANDOFF 后才能停止。
+- Git
+- Python `3.12.x`（不支持 3.13/3.14）
+- Node.js `20+`
+- Microsoft Edge（浏览器 QA 使用；日常运行可使用其他现代浏览器）
 
-## 角色与唯一交付
+克隆个人仓库的集成分支：
 
-| Agent | Owns | 最终交付 |
-| --- | --- | --- |
-| Agent 1 | `skills/`、`campusmind/tools/`、`campusmind/integrations/` | 能真实调用校园 Tool 的 DeepTutor Agent |
-| Agent 2 | `campusmind/domain/`、`storage/`、`repositories/`、`data/` | 数据模型、SQLite、演示数据和 RAG |
-| Agent 3 | `campusmind/services/`、`apps/api/` | 校园业务逻辑和 FastAPI 接口 |
-| Agent 4 | `apps/web/` | 完整 H5，先 Mock、后接固定 API |
-| Agent 0 | 全项目集成层 | 可启动、可测试、可演示的 CampusMind |
+```powershell
+git clone --branch agent/0-integration https://github.com/guiyuanzhuomin-oss/CampusMind-AI-Agents.git
+Set-Location CampusMind-AI-Agents
+```
 
-## 计划目录
+创建 Python 环境并安装后端与测试依赖：
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+Copy-Item .env.example .env
+```
+
+`.env` 已被 Git 忽略。默认 `CAMPUSMIND_MODEL_MODE=local-rules`，即使系统环境意外残留 Key 也不会自动进入在线模型；完整数据流仍可运行。
+
+### 2. 启动后端
+
+在仓库根目录开第一个 PowerShell：
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn apps.api.integration:app --env-file .env --host 127.0.0.1 --port 8000
+```
+
+启动时会幂等创建 `data/local/campusmind.db`，导入 `data/demo` 和 `data/knowledge`。健康检查：<http://127.0.0.1:8000/api/health>。
+
+### 3. 启动前端
+
+在仓库根目录开第二个 PowerShell：
+
+```powershell
+Copy-Item apps\web\.env.example apps\web\.env.local -Force
+Set-Location apps\web
+npm ci
+npm run dev
+```
+
+打开 <http://127.0.0.1:5173>。`apps/web/.env.example` 默认设置 `VITE_USE_MOCKS=false`，因此页面连接真实集成 API。若只想独立演示前端，把它改成 `true`。
+
+## 可选模型配置
+
+项目不要求模型 Key 才能启动。Day 0 安全规则禁止凭据变量出现在可提交模板中。需要试验 DeepSeek 时，只能把一个新生成且未泄露的 Key 手动加入本机 `.env`：
+
+```dotenv
+DEEPSEEK_API_KEY=
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEEPSEEK_MODEL=deepseek-chat
+CAMPUSMIND_MODEL_MODE=deepseek
+```
+
+只有 `CAMPUSMIND_MODEL_MODE=deepseek` 与有效 Key 同时存在时，集成入口才会启用在线模型。不要把 Key 放入 `VITE_*` 变量；Vite 会把这些变量暴露给浏览器。任何曾发到聊天、截图、Issue 或提交记录里的 Key 都应立即撤销并轮换。
+
+## 演示流程
+
+1. 在“今日简报”查看 SQLite 中的课程、任务、通知和建议。
+2. 在“通知解析”粘贴带明确年份的模拟通知。
+3. 核对不确定字段，勾选确认，创建任务。
+4. 在“课表与待办”确认任务已持久化，尝试完成和恢复。
+5. 在“问问 Agent”输入“学校规定考试管理是什么？”，检查回答和“资料来源”。
+6. 输入资料库没有覆盖的问题，系统应返回 `RAG_NO_SOURCE`，不能编造学校规定。
+
+## 测试与验收
+
+后端、数据、RAG、Runtime 和集成测试：
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe scripts\check_day0.py
+.\.venv\Scripts\python.exe scripts\check_contracts.py
+.\.venv\Scripts\python.exe -m pip check
+```
+
+前端测试与构建：
+
+```powershell
+Set-Location apps\web
+npm test
+npm run build
+npm run qa:browser
+```
+
+真实接口浏览器 QA 需要先启动后端和真实模式前端，然后运行：
+
+```powershell
+npm run qa:real
+```
+
+它会检查三种尺寸、四个页面、横向溢出、控制台错误，以及“通知确认 → 任务持久化 → Agent/RAG 来源”流程。最终数字和实际命令记录在 [`docs/INTEGRATION_REPORT.md`](docs/INTEGRATION_REPORT.md)。
+
+## 8 天执行方法
+
+- **Day 0：** 冻结 Shared Contract、目录、分支和验收基线。
+- **Day 1–4：** 四名组员分别与 AI 在独立分支完成 Agent 1–4；不得越界修改。
+- **Day 4 18:00：** 功能冻结，四份 HANDOFF 提交后停止并行施工。
+- **Day 5：** Agent 0 按 Data → Service → Runtime → Web 合并并跑分块测试。
+- **Day 6：** 修复全链路、SQLite 重启、重复任务、提醒恢复和错误响应。
+- **Day 7：** 修复响应式、长文本、空/错/超时状态和 UI 一致性。
+- **Day 8：** 全量回归、三轮核心场景、凭据扫描、集成报告和预览分支发布。
+
+这套方法的关键不是让五个 AI 同时改同一份代码，而是先冻结契约、子 Agent 各自只改 Owns 范围，最后只由主 Agent 统一整合。
+
+## Git 与仓库边界
+
+- `origin`：用户本人仓库 `guiyuanzhuomin-oss/CampusMind-AI-Agents`。
+- `target`：协作目标仓库 `yee01001100/CampusMind-AI`。
+- 当前发布只允许推送 `origin/agent/0-integration`。
+- 未经用户另行明确授权，不向 `target` 推送，不覆盖任何仓库的 `main`。
+- 提交前必须检查 diff 和敏感信息，只显式暂存确认过的路径；禁止 `git add .`、`git add -A`。
+
+## 目录
 
 ```text
 CampusMind-AI/
-├─ .env.example
-├─ .gitignore
-├─ README.md
-├─ pyproject.toml
-├─ contracts/
-│  ├─ SHARED_CONTRACT.md
-│  └─ examples/
-├─ docs/
-│  ├─ agents/
-│  │  ├─ AGENT-0.md
-│  │  ├─ AGENT-1.md
-│  │  ├─ AGENT-2.md
-│  │  ├─ AGENT-3.md
-│  │  └─ AGENT-4.md
-│  ├─ HANDOFF_TEMPLATE.md
-│  └─ FINAL_ACCEPTANCE.md
-├─ apps/
-│  ├─ api/
-│  └─ web/
-├─ campusmind/
-│  ├─ domain/
-│  ├─ integrations/
-│  ├─ repositories/
-│  ├─ services/
-│  ├─ storage/
-│  └─ tools/
-├─ skills/campusmind/
-├─ data/demo/
-├─ data/knowledge/
-├─ requirements/
-│  ├─ agent-1.txt
-│  ├─ agent-2.txt
-│  └─ agent-3.txt
-├─ scripts/
-│  ├─ check_contracts.py
-│  └─ check_day0.py
-└─ tests/
+├─ apps/api/                 # FastAPI 与集成入口
+├─ apps/web/                 # React/Vite H5 与浏览器 QA
+├─ campusmind/domain/        # 公共领域模型
+├─ campusmind/repositories/  # SQLite Repository
+├─ campusmind/services/      # 通知、课表、任务、提醒业务
+├─ campusmind/integrations/  # DeepTutor/DeepSeek 适配
+├─ campusmind/tools/         # Agent Tool 注册与调用
+├─ campusmind/storage/       # 建库和演示数据导入
+├─ data/demo/                # 明确标记的模拟业务数据
+├─ data/knowledge/           # 带有效期和来源的模拟资料
+├─ contracts/                # Shared Contract 与固定样例
+├─ docs/agents/              # 5 个 Agent 执行包
+└─ tests/                    # Contract、单元、API、集成测试
 ```
 
-## Day 0 基线检查
+## 已知限制
 
-所有 Agent 开工前都必须在 Python 3.12 环境运行：
+- 当前未安装或修改 DeepTutor 上游核心；公开 Host 桥已用 Fake Host 验证。无 Key 时 Runtime 明确显示 `local-rules`。
+- DeepSeek Transport 由 Fake Transport 自动测试；最终发布验收显式清空 Key，仅以 `local-rules` 结果为准，未把在线模型响应当成交付证据。
+- RAG 是本地字符二元组词法检索，不是 embedding 或向量数据库；默认排除已过期资料。
+- 所有校园数据和资料均为模拟，不连接真实教务、统一身份认证或消息推送平台。
+- Reminder 已完成规则、持久化、到期查询、停止和恢复；生产级后台调度器与手机推送不在此 MVP 内。
+- 演示学期起始日和部分数据日期固定在 2026 年 8 月，长期运行前应配置真实学期并更新资料有效期。
+- 当前 CORS 只允许本地开发端口 `5173` 和 QA 端口 `4173`。
 
-```powershell
-python --version
-python scripts/check_day0.py
-python -m pip install -e ".[dev]"
-python -m pytest tests/contract -q
-```
+## 项目文档
 
-`check_day0.py` 只验证共同目录、根配置、契约样例、时间格式和安全规则，不实现任何子 Agent 的业务代码。
-
-## 分支与远程仓库
-
-每个 Agent 使用独立分支和独立 worktree/克隆：
-
-```text
-agent/1-runtime
-agent/2-data-rag
-agent/3-service-api
-agent/4-web
-agent/0-integration
-```
-
-所有 Agent 1–4 分支必须从同一个 `day0-baseline` 标签创建，不得从各自本地的不同提交开工：
-
-```powershell
-git fetch origin --tags
-git switch -c agent/N-... day0-baseline
-```
-
-如果使用独立施工仓库：
-
-- `origin` 指向 Agent 施工仓库。
-- `target` 指向最终目标仓库 `yee01001100/CampusMind-AI`。
-- 子 Agent 只推送到 `origin` 的各自分支。
-- Agent 0 从四个分支合并后，将 `agent/0-integration` 推到 `target`。
-- 独立且无 fork 关系的仓库不能直接向目标仓库发跨仓 PR；需要目标仓库推送权限，或使用同一 fork 网络。
-
-Git 操作和 PR 约束以 [Shared Contract](contracts/SHARED_CONTRACT.md#git-与分支契约) 为准。
-
-## Agent 启动 Prompt
-
-子 Agent 只替换编号：
-
-> 阅读 `README.md`、`contracts/SHARED_CONTRACT.md` 和 `docs/agents/AGENT-N.md`。你是 Agent N。严格只执行该执行包，持续工作直到验收命令通过，创建 `HANDOFF-agentN.md` 后停止。不得修改其他 Agent 的目录。
-
-主 Agent：
-
-> 阅读 `README.md`、`contracts/SHARED_CONTRACT.md`、`docs/agents/AGENT-0.md` 和四份 HANDOFF。你是 Agent 0。按规定顺序合并四块实现，持续完成 Debug、UI 改进和最终验收，直到项目真实可运行。
-
-## 当前状态
-
-- [x] 明确产品目标和 MVP 场景
-- [x] 明确 4 个子 Agent + 1 个主 Agent 的执行方式
-- [x] 拆分 README、Shared Contract、Agent Packets、HANDOFF 和最终验收
-- [x] 创建 Day 0 项目骨架和可执行契约测试
-- [ ] Agent 1–4 并行施工
-- [ ] Agent 0 集成、Debug 和 UI 改进
-- [ ] 最终发布
-
-## 上游与许可
-
-CampusMind AI 使用 [HKUDS/DeepTutor](https://github.com/HKUDS/DeepTutor) 作为技术基础。DeepTutor 采用 Apache License 2.0。CampusMind AI 自身许可将在首个可运行版本前确认；第三方组件遵循各自原始许可。
+- [Shared Contract](contracts/SHARED_CONTRACT.md)
+- [Day 0 / 主 Agent 方法](docs/agents/AGENT-0.md)
+- [最终验收清单](docs/FINAL_ACCEPTANCE.md)
+- [集成报告](docs/INTEGRATION_REPORT.md)
+- [HANDOFF 模板](docs/HANDOFF_TEMPLATE.md)
 
 ---
 

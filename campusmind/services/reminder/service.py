@@ -58,8 +58,8 @@ class ReminderService:
         if task.status != "pending" or task.due_at is None:
             return []
         profile = self.repository.get_profile(task.student_id)
-        existing_keys = {
-            (reminder.task_id, reminder.trigger_at)
+        existing_by_key = {
+            (reminder.task_id, reminder.trigger_at): reminder
             for reminder in self.repository.list_reminders()
         }
         created: list[Reminder] = []
@@ -67,7 +67,13 @@ class ReminderService:
             trigger = self.move_out_of_quiet_hours(task.due_at - offset, profile)
             if trigger <= now or trigger >= task.due_at:
                 continue
-            if (task.id, trigger) in existing_keys:
+            existing = existing_by_key.get((task.id, trigger))
+            if existing is not None:
+                if existing.status == "skipped":
+                    restored = existing.model_copy(
+                        update={"status": "pending", "sent_at": None, "failure_reason": None}
+                    )
+                    created.append(self.repository.save_reminder(restored))
                 continue
             reminder = Reminder(
                 id=f"reminder-{uuid4().hex}",
@@ -75,7 +81,7 @@ class ReminderService:
                 trigger_at=trigger,
             )
             created.append(self.repository.save_reminder(reminder))
-            existing_keys.add((task.id, trigger))
+            existing_by_key[(task.id, trigger)] = reminder
         return created
 
     def due(self, *, student_id: str, at: datetime) -> list[Reminder]:

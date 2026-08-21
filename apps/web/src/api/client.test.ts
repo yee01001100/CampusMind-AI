@@ -1,5 +1,9 @@
-import { describe, expect, it } from 'vitest'
-import { ApiError, MockCampusMindApi } from './client'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { ApiError, MockCampusMindApi, RealCampusMindApi } from './client'
+import coursesJson from '../mocks/courses.json'
+import noticeResultJson from '../mocks/notice-result.json'
+
+afterEach(() => vi.unstubAllGlobals())
 
 describe('MockCampusMindApi contract', () => {
   it('returns Shared Contract shaped brief data with timezone-aware dates', async () => {
@@ -56,5 +60,56 @@ describe('MockCampusMindApi contract', () => {
     const api = new MockCampusMindApi()
     api.setScenario(scenario)
     await expect(api.getTodayBrief()).rejects.toBeInstanceOf(ApiError)
+  })
+})
+
+describe('RealCampusMindApi integration envelopes', () => {
+  const envelope = (data: unknown) => new Response(JSON.stringify({
+    ok: true,
+    data,
+    error: null,
+    request_id: 'req-web-test',
+  }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+
+  it('unwraps the integrated notice and course payloads', async () => {
+    const notice = { ...noticeResultJson, raw_text: '测试通知' }
+    const course = coursesJson[0]
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(envelope({ notice, tasks: [], reminders: [], duplicate: false }))
+      .mockResolvedValueOnce(envelope({ date: '2026-08-21', week: 1, courses: [course], next_course: course, free_slots: [] }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    const api = new RealCampusMindApi('http://127.0.0.1:8000')
+    expect((await api.parseNotice('测试通知')).raw_text).toBe('测试通知')
+    expect(await api.getTodayCourses()).toEqual([course])
+  })
+
+  it('turns the integrated chat envelope into UI events and sources', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(envelope({
+      message: '已找到有来源的校园资料。',
+      result: {
+        sources: [{
+          source_id: 'knowledge-demo-001',
+          title: '模拟校园资料',
+          effective_date: '2026-08-21',
+          source_ref: 'demo://knowledge/001',
+          is_demo: true,
+        }],
+      },
+      traces: [{ name: 'rag_search', status: 'success' }],
+      runtime_mode: 'local-rules',
+    })))
+
+    const events = []
+    for await (const event of new RealCampusMindApi('http://127.0.0.1:8000').streamChat('奖学金规定')) {
+      events.push(event)
+    }
+    expect(events.map((event) => event.type)).toEqual([
+      'tool_running', 'tool_success', 'delta', 'sources', 'done',
+    ])
+    expect(events.find((event) => event.type === 'sources')?.sources?.[0]).toMatchObject({
+      source_id: 'knowledge-demo-001',
+      simulated: true,
+    })
   })
 })

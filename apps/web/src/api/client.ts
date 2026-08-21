@@ -12,6 +12,7 @@ import type {
   CreateTaskResult,
   DemoScenario,
   Notice,
+  RagSource,
   Reminder,
   Task,
   TaskStatus,
@@ -238,7 +239,22 @@ export class MockCampusMindApi implements CampusMindApi {
   }
 }
 
-class RealCampusMindApi implements CampusMindApi {
+interface NoticeParsePayload {
+  notice: Notice
+}
+
+interface CourseDayPayload {
+  courses: Course[]
+}
+
+interface AgentChatPayload {
+  message: string
+  result: unknown
+  traces: Array<{ name: string; status: string; error_code?: string | null }>
+  runtime_mode: string
+}
+
+export class RealCampusMindApi implements CampusMindApi {
   readonly mode = 'real' as const
 
   constructor(private readonly baseUrl: string) {}
@@ -249,7 +265,7 @@ class RealCampusMindApi implements CampusMindApi {
       headers: { 'Content-Type': 'application/json', ...init?.headers },
     })
     const envelope = (await response.json()) as ApiResponse<T>
-    if (!response.ok || !envelope.ok || !envelope.data) {
+    if (!response.ok || !envelope.ok || envelope.data === null) {
       throw new ApiError(envelope.error ?? { code: 'INTERNAL_ERROR', message: '服务返回了无效响应', details: {} })
     }
     return envelope.data
@@ -260,10 +276,15 @@ class RealCampusMindApi implements CampusMindApi {
   }
 
   parseNotice(text: string, studentId = STUDENT_ID) {
-    return this.request<Notice>('/api/v1/notices/parse', {
+    return this.request<NoticeParsePayload>('/api/v1/notices/parse', {
       method: 'POST',
-      body: JSON.stringify({ text, student_id: studentId, reference_time: new Date().toISOString() }),
-    })
+      body: JSON.stringify({
+        text,
+        student_id: studentId,
+        reference_time: new Date().toISOString(),
+        candidate: { confidence: 0.7 },
+      }),
+    }).then((result) => result.notice)
   }
 
   createTaskFromNotice(notice: Notice, studentId = STUDENT_ID) {
@@ -283,7 +304,8 @@ class RealCampusMindApi implements CampusMindApi {
   }
 
   getTodayCourses(studentId = STUDENT_ID) {
-    return this.request<Course[]>(`/api/v1/courses/today?student_id=${encodeURIComponent(studentId)}`)
+    return this.request<CourseDayPayload>(`/api/v1/courses/today?student_id=${encodeURIComponent(studentId)}`)
+      .then((result) => result.courses)
   }
 
   listTasks(studentId = STUDENT_ID) {
@@ -303,30 +325,41 @@ class RealCampusMindApi implements CampusMindApi {
 
   async *streamChat(message: string, studentId = STUDENT_ID, signal?: AbortSignal): AsyncGenerator<ChatEvent> {
     yield { type: 'tool_running', tool: 'campus_agent' }
-    const response = await fetch(`${this.baseUrl}/api/v1/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message, student_id: studentId }),
-      signal,
-    })
-    if (!response.ok || !response.body) {
-      throw new ApiError({ code: 'MODEL_UNAVAILABLE', message: 'Agent 暂时不可用', details: { status: response.status } })
+    let data: AgentChatPayload
+    try {
+      data = await this.request<AgentChatPayload>('/api/v1/chat', {
+        method: 'POST',
+        body: JSON.stringify({ message, student_id: studentId }),
+        signal,
+      })
+    } catch (error) {
+      yield { type: 'tool_failure', tool: 'campus_agent', content: error instanceof Error ? error.message : 'Agent 暂时不可用' }
+      throw error
     }
     yield { type: 'tool_success', tool: 'campus_agent' }
-    const reader = response.body.getReader()
-    const decoder = new TextDecoder()
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      const content = decoder.decode(value, { stream: true })
-      if (content) yield { type: 'delta', content }
+
+    if (data.message) yield { type: 'delta', content: data.message }
+    if (data.result && typeof data.result === 'object' && 'sources' in data.result) {
+      const rawSources = (data.result as { sources?: unknown }).sources
+      if (Array.isArray(rawSources)) {
+        const sources: RagSource[] = rawSources
+          .filter((source): source is Record<string, unknown> => Boolean(source) && typeof source === 'object')
+          .map((source) => ({
+            source_id: String(source.source_id ?? ''),
+            title: String(source.title ?? '校园资料'),
+            valid_at: String(source.effective_date ?? ''),
+            path: String(source.source_ref ?? ''),
+            simulated: Boolean(source.is_demo),
+          }))
+        if (sources.length) yield { type: 'sources', sources }
+      }
     }
     yield { type: 'done' }
   }
 }
 
 export function createApiClient(): CampusMindApi {
-  if (import.meta.env.VITE_USE_MOCKS === 'false') {
+  if (import.meta.env.MODE !== 'test' && import.meta.env.VITE_USE_MOCKS === 'false') {
     return new RealCampusMindApi(import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000')
   }
   return new MockCampusMindApi()

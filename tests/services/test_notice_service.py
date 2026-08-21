@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest
 
@@ -81,6 +81,21 @@ def test_relative_friday_and_multiple_actions(repository) -> None:
     assert result.notice.deadline == datetime(2026, 8, 21, 18, 0, tzinfo=ZONE)
     assert result.notice.actions == ["完成报名", "提交承诺书"]
     assert len(result.tasks) == 2
+
+
+def test_relative_weekday_normalizes_utc_reference_to_shanghai(repository) -> None:
+    result = NoticeService(repository, TaskService(repository)).parse(
+        NoticeParseCommand(
+            text="本周五 18:00 截止，要求：提交材料",
+            student_id="student-demo-001",
+            reference_time=datetime(2026, 8, 16, 16, 30, tzinfo=timezone.utc),
+            candidate=NoticeCandidate(confidence=0.9),
+        )
+    )
+
+    assert result.notice.deadline == datetime(2026, 8, 21, 18, 0, tzinfo=ZONE)
+    assert result.notice.created_at == datetime(2026, 8, 17, 0, 30, tzinfo=ZONE)
+    assert result.expired is False
 
 
 def test_registration_start_and_deadline_create_distinct_actions(repository) -> None:

@@ -9,7 +9,8 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run",
     "test:watch": "vitest",
-    "qa:browser": "node scripts/qa-browser.mjs"
+    "qa:browser": "node scripts/qa-browser.mjs",
+    "qa:real": "node scripts/qa-real-browser.mjs"
   },
   "dependencies": {
     "react": "^19.1.1",

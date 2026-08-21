@@ -5,7 +5,7 @@ import { ErrorView, LoadingView, PriorityBadge } from '../components/StateView'
 import type { CreateTaskResult, Notice, Priority } from '../types'
 import { errorCopy, formatDateTime } from '../utils'
 
-const defaultNotice = '【模拟数据】2026 级本科生请在 8 月 22 日 18:00 前完成四六级报名。报名对象以教务系统资格名单为准，如时间有调整请以学院后续通知为准。'
+const defaultNotice = '【模拟数据】2026级本科生请在2026年8月22日 18:00前完成四六级报名。报名对象以教务系统资格名单为准，如时间有调整请以学院后续通知为准。'
 
 export function NoticePage() {
   const [text, setText] = useState(defaultNotice)

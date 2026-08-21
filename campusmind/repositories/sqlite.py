@@ -308,6 +308,52 @@ class TaskRepository:
             ).fetchall()
         return [self._from_row(row) for row in rows]
 
+    def list_for_notice(self, notice_id: str) -> list[Task]:
+        """Return every task derived from one source notice."""
+        with self.database.connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT * FROM tasks
+                WHERE source_notice_id = ?
+                ORDER BY created_at, id
+                """,
+                (notice_id,),
+            ).fetchall()
+        return [self._from_row(row) for row in rows]
+
+    def save(self, task: Task) -> Task:
+        """Insert or update a task while preserving the unique dedupe key."""
+        values = task.model_dump(mode="json")
+        with self.database.connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO tasks
+                    (id, student_id, title, description, task_type, priority, status,
+                     due_at, source_notice_id, dedupe_key, created_at, completed_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(id) DO UPDATE SET
+                    student_id=excluded.student_id,
+                    title=excluded.title,
+                    description=excluded.description,
+                    task_type=excluded.task_type,
+                    priority=excluded.priority,
+                    status=excluded.status,
+                    due_at=excluded.due_at,
+                    source_notice_id=excluded.source_notice_id,
+                    dedupe_key=excluded.dedupe_key,
+                    created_at=excluded.created_at,
+                    completed_at=excluded.completed_at
+                """,
+                (
+                    values["id"], values["student_id"], values["title"],
+                    values["description"], values["task_type"], values["priority"],
+                    values["status"], values["due_at"], values["source_notice_id"],
+                    values["dedupe_key"], values["created_at"], values["completed_at"],
+                ),
+            )
+            connection.commit()
+        return task
+
     def complete(self, student_id: str, task_id: str, *, completed_at: datetime) -> Task | None:
         _ = Task.model_fields["completed_at"]  # keeps validation source explicit
         if completed_at.tzinfo is None or completed_at.utcoffset() is None:
@@ -399,6 +445,13 @@ class ReminderRepository:
             rows = connection.execute(
                 "SELECT * FROM reminders WHERE task_id = ? ORDER BY trigger_at, id",
                 (task_id,),
+            ).fetchall()
+        return [self._from_row(row) for row in rows]
+
+    def list_all(self) -> list[Reminder]:
+        with self.database.connect() as connection:
+            rows = connection.execute(
+                "SELECT * FROM reminders ORDER BY trigger_at, id"
             ).fetchall()
         return [self._from_row(row) for row in rows]
 

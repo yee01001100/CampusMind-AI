@@ -9,9 +9,14 @@ type TaskGroup = { title: string; description: string; tasks: Task[] }
 
 function taskGroups(tasks: Task[]): TaskGroup[] {
   const pending = tasks.filter((task) => task.status === 'pending')
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
+  }).formatToParts(new Date())
+  const value = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? ''
+  const today = `${value('year')}-${value('month')}-${value('day')}`
   return [
-    { title: '今天截止', description: '优先处理', tasks: pending.filter((task) => task.due_at?.startsWith('2026-08-21')) },
-    { title: '接下来', description: '按截止时间', tasks: pending.filter((task) => !task.due_at?.startsWith('2026-08-21')) },
+    { title: '今天截止', description: '优先处理', tasks: pending.filter((task) => task.due_at?.startsWith(today)) },
+    { title: '接下来', description: '按截止时间', tasks: pending.filter((task) => !task.due_at?.startsWith(today)) },
     { title: '已完成与取消', description: '可以恢复', tasks: tasks.filter((task) => task.status !== 'pending') },
   ].filter((group) => group.tasks.length)
 }
@@ -25,6 +30,15 @@ export function PlannerPage() {
   const [updating, setUpdating] = useState<string | null>(null)
   const [attempt, setAttempt] = useState(0)
   const groups = useMemo(() => taskGroups(tasks), [tasks])
+  const courseConflicts = useMemo(() => {
+    const ordered = [...courses].sort((left, right) => left.start_time.localeCompare(right.start_time))
+    return ordered.slice(0, -1).flatMap((left, index) => {
+      const right = ordered[index + 1]
+      return left.end_time > right.start_time
+        ? [`${left.name}与${right.name}在 ${right.start_time}–${left.end_time} 重叠`]
+        : []
+    })
+  }, [courses])
 
   useEffect(() => {
     let active = true
@@ -63,7 +77,7 @@ export function PlannerPage() {
 
   return (
     <section className="page-section planner-page">
-      <div className="page-intro compact-intro"><div><span className="date-line">2026 年 8 月 21 日 · 第 2 周</span><h2>课表与待办</h2><p>课程按时间展开，待办按截止日期与优先级分组。</p></div></div>
+      <div className="page-intro compact-intro"><div><span className="date-line">今天 · Asia/Shanghai</span><h2>课表与待办</h2><p>课程按时间展开，待办按截止日期与优先级分组。</p></div></div>
       {error && <div className="inline-alert warning" role="alert"><Icon name="alert" /><div><b>部分数据暂不可用</b><span>{error}</span></div><button className="text-action" onClick={() => setAttempt((value) => value + 1)}>重试</button></div>}
 
       <div className="planner-layout">
@@ -83,7 +97,11 @@ export function PlannerPage() {
                   {index < courses.length - 1 && <div className="free-time">空闲 {Number(courses[index + 1].start_time.slice(0, 2)) * 60 + Number(courses[index + 1].start_time.slice(3)) - Number(course.end_time.slice(0, 2)) * 60 - Number(course.end_time.slice(3))} 分钟</div>}
                 </div>
               ))}
-              <div className="conflict-note"><Icon name="alert" /><span><b>14:00 前有 20 分钟冲突</b> · 建议把社团面试准备提前到午休。</span></div>
+              {courseConflicts.length ? (
+                <div className="conflict-note"><Icon name="alert" /><span><b>检测到课程冲突</b> · {courseConflicts.join('；')}</span></div>
+              ) : (
+                <div className="conflict-note clear"><Icon name="check" /><span><b>今天没有课程冲突</b> · 当前课表可以按顺序执行。</span></div>
+              )}
             </div>
           ) : <EmptyView title="今天没有课程" detail="可以把空闲时间留给临期待办或休息。" />}
         </section>

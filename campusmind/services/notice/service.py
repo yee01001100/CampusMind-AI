@@ -38,6 +38,8 @@ class NoticeService:
         if not text:
             raise ServiceError("NOTICE_EMPTY", "通知正文为空")
 
+        reference_time = command.reference_time.astimezone(self.timezone)
+
         source_key = command.candidate.source_ref or hashlib.sha256(text.encode("utf-8")).hexdigest()
         existing = self.repository.get_notice_by_source(source_key)
         if existing is not None:
@@ -45,11 +47,15 @@ class NoticeService:
                 notice=existing,
                 tasks=self.repository.list_tasks_for_notice(existing.id),
                 duplicate=True,
-                expired=bool(existing.deadline and existing.deadline < command.reference_time),
+                expired=bool(existing.deadline and existing.deadline < reference_time),
                 applicable=True,
             )
 
-        deadline = command.candidate.deadline or self._extract_deadline(text, command.reference_time)
+        deadline = command.candidate.deadline
+        if deadline is not None:
+            deadline = deadline.astimezone(self.timezone)
+        else:
+            deadline = self._extract_deadline(text, reference_time)
         audience = command.candidate.audience or self._extract_audience(text)
         applicable = self._is_applicable(audience, command.student_segments)
         if not applicable:
@@ -63,9 +69,9 @@ class NoticeService:
         if confidence is None:
             confidence = 0.9 if deadline is not None else 0.7
         needs_confirmation = confidence < 0.75 or deadline is None
-        expired = bool(deadline and deadline < command.reference_time)
+        expired = bool(deadline and deadline < reference_time)
         priority = command.candidate.priority or self.task_service.priority_for(
-            deadline, command.reference_time
+            deadline, reference_time
         )
         notice_id = f"notice-{uuid4().hex}"
         notice = Notice(
@@ -81,7 +87,7 @@ class NoticeService:
             source_ref=command.candidate.source_ref,
             confidence=confidence,
             needs_confirmation=needs_confirmation,
-            created_at=command.reference_time,
+            created_at=reference_time,
         )
         self.repository.save_notice(source_key, notice)
 
@@ -99,7 +105,7 @@ class NoticeService:
                         source_notice_id=notice.id,
                         dedupe_key=f"{command.student_id}:{notice.id}:{index}:{self._slug(action)}",
                     ),
-                    now=command.reference_time,
+                    now=reference_time,
                 )
                 tasks.append(result.task)
         return NoticeParseResult(
