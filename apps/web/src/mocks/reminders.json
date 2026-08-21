@@ -1,0 +1,20 @@
+[
+  {
+    "id": "reminder-demo-001",
+    "task_id": "task-demo-001",
+    "trigger_at": "2026-08-21T15:00:00+08:00",
+    "channel": "in_app",
+    "status": "pending",
+    "sent_at": null,
+    "failure_reason": null
+  },
+  {
+    "id": "reminder-demo-003",
+    "task_id": "task-demo-003",
+    "trigger_at": "2026-08-24T20:00:00+08:00",
+    "channel": "in_app",
+    "status": "pending",
+    "sent_at": null,
+    "failure_reason": null
+  }
+]

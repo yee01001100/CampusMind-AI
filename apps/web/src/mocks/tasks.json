@@ -1,0 +1,44 @@
+[
+  {
+    "id": "task-demo-001",
+    "student_id": "student-demo-001",
+    "title": "确认奖学金材料并提交",
+    "description": "来自模拟通知 notice-demo-001",
+    "task_type": "registration",
+    "priority": "high",
+    "status": "pending",
+    "due_at": "2026-08-21T18:00:00+08:00",
+    "source_notice_id": "notice-demo-001",
+    "dedupe_key": "student-demo-001:notice-demo-001:registration",
+    "created_at": "2026-08-18T08:06:00+08:00",
+    "completed_at": null
+  },
+  {
+    "id": "task-demo-002",
+    "student_id": "student-demo-001",
+    "title": "完成数据结构实验报告",
+    "description": "课程作业",
+    "task_type": "assignment",
+    "priority": "medium",
+    "status": "completed",
+    "due_at": "2026-08-22T21:00:00+08:00",
+    "source_notice_id": null,
+    "dedupe_key": "student-demo-001:assignment:data-structure-2",
+    "created_at": "2026-08-18T09:00:00+08:00",
+    "completed_at": "2026-08-21T08:20:00+08:00"
+  },
+  {
+    "id": "task-demo-003",
+    "student_id": "student-demo-001",
+    "title": "准备英语口语课堂展示",
+    "description": "准备三分钟展示和一页讲义",
+    "task_type": "assignment",
+    "priority": "normal",
+    "status": "pending",
+    "due_at": "2026-08-25T09:00:00+08:00",
+    "source_notice_id": null,
+    "dedupe_key": "student-demo-001:assignment:english-speech",
+    "created_at": "2026-08-20T10:00:00+08:00",
+    "completed_at": null
+  }
+]

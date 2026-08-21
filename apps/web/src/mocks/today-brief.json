@@ -1,0 +1,96 @@
+{
+  "date": "2026-08-21",
+  "courses": [
+    {
+      "id": "course-demo-001",
+      "student_id": "student-demo-001",
+      "name": "人工智能导论",
+      "teacher": "模拟教师林老师",
+      "weekday": 5,
+      "start_time": "10:00",
+      "end_time": "11:35",
+      "location": "模拟教学楼 A101",
+      "start_week": 1,
+      "end_week": 16,
+      "week_pattern": "all",
+      "custom_weeks": []
+    },
+    {
+      "id": "course-demo-002",
+      "student_id": "student-demo-001",
+      "name": "数据结构课程设计",
+      "teacher": "模拟教师周老师",
+      "weekday": 5,
+      "start_time": "14:00",
+      "end_time": "15:35",
+      "location": "模拟实验楼 B302",
+      "start_week": 2,
+      "end_week": 15,
+      "week_pattern": "all",
+      "custom_weeks": []
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task-demo-001",
+      "student_id": "student-demo-001",
+      "title": "确认奖学金材料并提交",
+      "description": "来自模拟通知 notice-demo-001",
+      "task_type": "registration",
+      "priority": "high",
+      "status": "pending",
+      "due_at": "2026-08-21T18:00:00+08:00",
+      "source_notice_id": "notice-demo-001",
+      "dedupe_key": "student-demo-001:notice-demo-001:registration",
+      "created_at": "2026-08-18T08:06:00+08:00",
+      "completed_at": null
+    },
+    {
+      "id": "task-demo-002",
+      "student_id": "student-demo-001",
+      "title": "完成数据结构实验报告",
+      "description": "课程作业",
+      "task_type": "assignment",
+      "priority": "medium",
+      "status": "completed",
+      "due_at": "2026-08-22T21:00:00+08:00",
+      "source_notice_id": null,
+      "dedupe_key": "student-demo-001:assignment:data-structure-2",
+      "created_at": "2026-08-18T09:00:00+08:00",
+      "completed_at": "2026-08-21T08:20:00+08:00"
+    },
+    {
+      "id": "task-demo-003",
+      "student_id": "student-demo-001",
+      "title": "准备英语口语课堂展示",
+      "description": "准备三分钟展示和一页讲义",
+      "task_type": "assignment",
+      "priority": "normal",
+      "status": "pending",
+      "due_at": "2026-08-25T09:00:00+08:00",
+      "source_notice_id": null,
+      "dedupe_key": "student-demo-001:assignment:english-speech",
+      "created_at": "2026-08-20T10:00:00+08:00",
+      "completed_at": null
+    }
+  ],
+  "notices": [
+    {
+      "id": "notice-demo-001",
+      "title": "模拟奖学金材料提交提醒",
+      "raw_text": "【模拟数据】请符合条件的同学于 8 月 21 日 18:00 前完成材料核对并提交。",
+      "audience": ["2026级本科生", "符合申请条件的学生"],
+      "published_at": "2026-08-20T08:00:00+08:00",
+      "deadline": "2026-08-21T18:00:00+08:00",
+      "actions": ["核对材料", "提交申请"],
+      "priority": "high",
+      "source_type": "demo",
+      "source_ref": "demo://notices/notice-demo-001",
+      "confidence": 0.94,
+      "needs_confirmation": false,
+      "created_at": "2026-08-20T08:05:00+08:00"
+    }
+  ],
+  "conflicts": ["14:00 的课程与社团面试准备时间重叠 20 分钟"],
+  "suggestions": ["先在 15:00 提醒前核对奖学金材料", "午休后预留 25 分钟检查课程设计环境"]
+}
