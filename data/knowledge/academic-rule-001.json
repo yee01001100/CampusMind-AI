@@ -1,0 +1,11 @@
+{
+  "source_id": "knowledge-demo-academic-001",
+  "title": "模拟本科生选课管理说明",
+  "source_type": "academic_rule",
+  "published_at": "2026-08-01T09:00:00+08:00",
+  "effective_date": "2026-08-01",
+  "expires_at": null,
+  "source_ref": "demo://knowledge/academic-rule-001",
+  "is_demo": true,
+  "content": "【模拟资料，不代表任何真实学校规定】学生应在模拟选课开放期内完成选课、退课和课表核对。选课结果以模拟教务系统中的最终课表为准。若两门课程时间冲突，学生应在选课截止前调整，不应同时保留冲突课程。\n\n模拟选课开放期为2026年8月17日08:00至2026年8月24日18:00。超过截止时间后，仅可向模拟学院提交书面申请，是否批准由模拟教务办公室确认。"
+}

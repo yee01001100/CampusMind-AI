@@ -1,0 +1,11 @@
+{
+  "source_id": "knowledge-demo-notice-005",
+  "title": "模拟校园网维护通知",
+  "source_type": "campus_notice",
+  "published_at": "2026-08-21T08:00:00+08:00",
+  "effective_date": "2026-08-21",
+  "expires_at": "2026-08-23",
+  "source_ref": "demo://knowledge/notice-005",
+  "is_demo": true,
+  "content": "【模拟通知】校园网将于2026年8月22日00:30至03:00进行维护，模拟宿舍区网络可能短暂中断。请提前保存在线作业，维护期间无需反复提交账号密码。"
+}

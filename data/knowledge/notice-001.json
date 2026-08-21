@@ -1,0 +1,11 @@
+{
+  "source_id": "knowledge-demo-notice-001",
+  "title": "模拟新生报到安排通知",
+  "source_type": "campus_notice",
+  "published_at": "2026-08-10T08:00:00+08:00",
+  "effective_date": "2026-08-10",
+  "expires_at": "2026-09-01",
+  "source_ref": "demo://knowledge/notice-001",
+  "is_demo": true,
+  "content": "【模拟通知】新生报到演示时间为2026年8月30日08:30至17:00，地点为模拟体育馆。请携带模拟录取材料，完成身份核验、宿舍登记和校园卡演示领取。"
+}

@@ -1,1 +1,3 @@
-# Agent 2 records verified Pydantic/data/RAG dependencies here.
+# Agent 2 keeps the data layer deliberately small. SQLite and retrieval use
+# Python's standard library; Pydantic validates the frozen public contract.
+pydantic>=2.10,<3

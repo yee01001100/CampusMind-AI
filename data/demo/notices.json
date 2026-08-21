@@ -1,0 +1,42 @@
+[
+  {
+    "id": "notice-demo-001", "title": "模拟四六级报名通知",
+    "raw_text": "【模拟数据】2026级本科生请在8月22日18:00前完成四六级报名。",
+    "audience": ["2026级本科生"], "published_at": "2026-08-18T08:00:00+08:00",
+    "deadline": "2026-08-22T18:00:00+08:00", "actions": ["登录模拟教务系统完成报名"],
+    "priority": "high", "source_type": "demo", "source_ref": "demo://notices/notice-demo-001",
+    "confidence": 0.96, "needs_confirmation": false, "created_at": "2026-08-18T08:05:00+08:00"
+  },
+  {
+    "id": "notice-demo-002", "title": "模拟新生图书馆培训",
+    "raw_text": "【模拟数据】新生图书馆培训于8月25日14:00在模拟图书馆报告厅举行。",
+    "audience": ["2026级本科生"], "published_at": "2026-08-18T09:00:00+08:00",
+    "deadline": "2026-08-24T18:00:00+08:00", "actions": ["在线预约培训场次", "携带模拟校园卡签到"],
+    "priority": "medium", "source_type": "demo", "source_ref": "demo://notices/notice-demo-002",
+    "confidence": 0.93, "needs_confirmation": false, "created_at": "2026-08-18T09:02:00+08:00"
+  },
+  {
+    "id": "notice-demo-003", "title": "模拟奖学金材料提交",
+    "raw_text": "【模拟数据】奖学金申请材料请于8月28日17:00前提交至模拟学院办公室。",
+    "audience": ["全体本科生"], "published_at": "2026-08-19T10:00:00+08:00",
+    "deadline": "2026-08-28T17:00:00+08:00", "actions": ["下载模拟申请表", "提交模拟证明材料"],
+    "priority": "high", "source_type": "demo", "source_ref": "demo://notices/notice-demo-003",
+    "confidence": 0.91, "needs_confirmation": false, "created_at": "2026-08-19T10:03:00+08:00"
+  },
+  {
+    "id": "notice-demo-004", "title": "模拟宿舍消防演练",
+    "raw_text": "【模拟数据】宿舍消防演练拟于下周进行，具体日期待确认。",
+    "audience": ["住宿学生"], "published_at": "2026-08-20T11:00:00+08:00",
+    "deadline": null, "actions": ["等待楼栋通知并确认演练时间"],
+    "priority": "critical", "source_type": "demo", "source_ref": "demo://notices/notice-demo-004",
+    "confidence": 0.62, "needs_confirmation": true, "created_at": "2026-08-20T11:04:00+08:00"
+  },
+  {
+    "id": "notice-demo-005", "title": "模拟志愿服务招募",
+    "raw_text": "【模拟数据】迎新志愿服务招募开放至8月23日20:00。",
+    "audience": ["全体学生"], "published_at": "2026-08-20T12:00:00+08:00",
+    "deadline": "2026-08-23T20:00:00+08:00", "actions": ["填写模拟报名表"],
+    "priority": "normal", "source_type": "demo", "source_ref": "demo://notices/notice-demo-005",
+    "confidence": 0.95, "needs_confirmation": false, "created_at": "2026-08-20T12:01:00+08:00"
+  }
+]

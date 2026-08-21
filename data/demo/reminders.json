@@ -1,0 +1,22 @@
+[
+  {
+    "id": "reminder-demo-001", "task_id": "task-demo-001", "trigger_at": "2026-08-21T18:00:00+08:00",
+    "channel": "in_app", "status": "pending", "sent_at": null, "failure_reason": null
+  },
+  {
+    "id": "reminder-demo-002", "task_id": "task-demo-002", "trigger_at": "2026-08-23T18:00:00+08:00",
+    "channel": "in_app", "status": "pending", "sent_at": null, "failure_reason": null
+  },
+  {
+    "id": "reminder-demo-003", "task_id": "task-demo-003", "trigger_at": "2026-08-27T17:00:00+08:00",
+    "channel": "in_app", "status": "pending", "sent_at": null, "failure_reason": null
+  },
+  {
+    "id": "reminder-demo-004", "task_id": "task-demo-006", "trigger_at": "2026-08-27T20:00:00+08:00",
+    "channel": "in_app", "status": "pending", "sent_at": null, "failure_reason": null
+  },
+  {
+    "id": "reminder-demo-005", "task_id": "task-demo-005", "trigger_at": "2026-08-20T12:05:00+08:00",
+    "channel": "in_app", "status": "sent", "sent_at": "2026-08-20T12:05:02+08:00", "failure_reason": null
+  }
+]

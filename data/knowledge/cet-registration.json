@@ -1,0 +1,11 @@
+{
+  "source_id": "knowledge-demo-cet-001",
+  "title": "模拟大学英语四六级报名说明",
+  "source_type": "registration_guide",
+  "published_at": "2026-08-18T08:00:00+08:00",
+  "effective_date": "2026-08-18",
+  "expires_at": "2026-08-23",
+  "source_ref": "demo://knowledge/cet-registration",
+  "is_demo": true,
+  "content": "【模拟资料，不代表真实考试报名安排】符合模拟报名条件的2026级本科生，应在2026年8月22日18:00前登录模拟教务系统，核对姓名与证件信息，选择英语四级或英语六级并确认报名。未显示报名资格时，应联系模拟教务办公室，不要重复创建报名任务。"
+}

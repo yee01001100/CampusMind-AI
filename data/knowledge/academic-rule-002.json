@@ -1,0 +1,11 @@
+{
+  "source_id": "knowledge-demo-academic-002",
+  "title": "模拟课程缓考申请旧版说明",
+  "source_type": "academic_rule",
+  "published_at": "2025-09-01T09:00:00+08:00",
+  "effective_date": "2025-09-01",
+  "expires_at": "2026-07-31",
+  "source_ref": "demo://knowledge/academic-rule-002",
+  "is_demo": true,
+  "content": "【模拟过期资料，不代表任何真实学校规定】旧版缓考申请要求学生在考试开始前提交模拟缓考申请表和相关说明材料。本资料有效期截至2026年7月31日，查询时必须展示有效期，不得作为当前规定直接使用。"
+}

@@ -1,0 +1,11 @@
+{
+  "source_id": "knowledge-demo-exam-001",
+  "title": "模拟考试管理规定",
+  "source_type": "exam_rule",
+  "published_at": "2026-08-01T10:00:00+08:00",
+  "effective_date": "2026-08-01",
+  "expires_at": null,
+  "source_ref": "demo://knowledge/exam-management",
+  "is_demo": true,
+  "content": "【模拟资料，不代表任何真实学校规定】参加模拟考试时，学生应在开考前20分钟到达考场，携带模拟校园卡并按座位安排就座。禁止携带未经允许的电子设备。考试时间或地点与课表不一致时，应以带来源的最新模拟考试通知为准并向教务人员确认。"
+}

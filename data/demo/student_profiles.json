@@ -1,0 +1,16 @@
+[
+  {
+    "id": "student-demo-001",
+    "name": "模拟学生",
+    "major": "计算机科学与技术",
+    "grade": "2026",
+    "timezone": "Asia/Shanghai",
+    "quiet_hours_start": "23:00",
+    "quiet_hours_end": "07:00",
+    "interests": ["人工智能", "校园竞赛", "志愿服务"],
+    "reminder_preferences": {
+      "registration": ["P3D", "P1D", "PT3H"],
+      "assignment": ["P1D", "PT2H"]
+    }
+  }
+]

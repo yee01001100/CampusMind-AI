@@ -1,0 +1,11 @@
+{
+  "source_id": "knowledge-demo-notice-004",
+  "title": "模拟迎新志愿服务招募",
+  "source_type": "campus_notice",
+  "published_at": "2026-08-20T12:00:00+08:00",
+  "effective_date": "2026-08-20",
+  "expires_at": "2026-08-24",
+  "source_ref": "demo://knowledge/notice-004",
+  "is_demo": true,
+  "content": "【模拟通知】迎新志愿服务面向全体模拟学生招募，报名截止时间为2026年8月23日20:00。服务岗位包括路线引导、材料整理和咨询台协助。"
+}

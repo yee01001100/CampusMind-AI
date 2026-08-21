@@ -1,0 +1,11 @@
+{
+  "source_id": "knowledge-demo-notice-002",
+  "title": "模拟图书馆入馆培训通知",
+  "source_type": "campus_notice",
+  "published_at": "2026-08-18T09:00:00+08:00",
+  "effective_date": "2026-08-18",
+  "expires_at": "2026-08-26",
+  "source_ref": "demo://knowledge/notice-002",
+  "is_demo": true,
+  "content": "【模拟通知】图书馆入馆培训于2026年8月25日14:00在模拟图书馆报告厅举行。参加者需在8月24日18:00前预约场次，培训内容包含借阅规则和电子资源检索演示。"
+}
