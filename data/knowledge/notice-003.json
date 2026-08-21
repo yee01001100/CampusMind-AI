@@ -1,0 +1,11 @@
+{
+  "source_id": "knowledge-demo-notice-003",
+  "title": "模拟宿舍消防演练预告",
+  "source_type": "campus_notice",
+  "published_at": "2026-08-20T11:00:00+08:00",
+  "effective_date": "2026-08-20",
+  "expires_at": null,
+  "source_ref": "demo://knowledge/notice-003",
+  "is_demo": true,
+  "content": "【模拟通知】宿舍消防演练的具体日期尚未确认。住宿学生应等待模拟楼栋管理员发布正式时间，不得根据本预告猜测日期。收到确认后，请按指定疏散路线参加演练。"
+}

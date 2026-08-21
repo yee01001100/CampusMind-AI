@@ -1,0 +1,11 @@
+{
+  "source_id": "knowledge-demo-scholarship-001",
+  "title": "模拟创新竞赛奖学金申请说明",
+  "source_type": "scholarship_guide",
+  "published_at": "2026-08-19T10:00:00+08:00",
+  "effective_date": "2026-08-19",
+  "expires_at": "2026-08-29",
+  "source_ref": "demo://knowledge/competition-scholarship",
+  "is_demo": true,
+  "content": "【模拟资料】创新竞赛奖学金演示申请面向参与校级以上模拟竞赛的本科生。申请人需在2026年8月28日17:00前提交模拟申请表、获奖证明和个人总结。所有材料仅用于本项目演示，不应包含真实个人证件信息。"
+}

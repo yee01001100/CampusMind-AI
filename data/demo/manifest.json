@@ -1,0 +1,9 @@
+{
+  "dataset_id": "campusmind-demo-2026-fall",
+  "title": "CampusMind 2026 秋季模拟数据",
+  "is_demo": true,
+  "contains_real_personal_data": false,
+  "term_start": "2026-08-17",
+  "timezone": "Asia/Shanghai",
+  "note": "全部姓名、地点、通知和时间均为产品演示用途的虚构数据。"
+}

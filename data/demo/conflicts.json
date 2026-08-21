@@ -1,0 +1,12 @@
+[
+  {
+    "id": "conflict-demo-001", "is_demo": true, "week_pattern": "odd",
+    "course_ids": ["course-demo-001", "course-demo-002"],
+    "reason": "周一 09:00 至 09:35 时间重叠"
+  },
+  {
+    "id": "conflict-demo-002", "is_demo": true, "week_pattern": "even",
+    "course_ids": ["course-demo-003", "course-demo-004"],
+    "reason": "周二 11:00 至 11:35 时间重叠"
+  }
+]

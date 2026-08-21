@@ -1,0 +1,50 @@
+[
+  {
+    "id": "course-demo-001", "student_id": "student-demo-001",
+    "name": "人工智能导论", "teacher": "模拟教师甲", "weekday": 1,
+    "start_time": "08:00", "end_time": "09:35", "location": "模拟教学楼 A101",
+    "start_week": 1, "end_week": 16, "week_pattern": "all", "custom_weeks": []
+  },
+  {
+    "id": "course-demo-002", "student_id": "student-demo-001",
+    "name": "数据结构专题", "teacher": "模拟教师乙", "weekday": 1,
+    "start_time": "09:00", "end_time": "10:35", "location": "模拟实验楼 B201",
+    "start_week": 1, "end_week": 16, "week_pattern": "odd", "custom_weeks": []
+  },
+  {
+    "id": "course-demo-003", "student_id": "student-demo-001",
+    "name": "大学英语", "teacher": "模拟教师丙", "weekday": 2,
+    "start_time": "10:00", "end_time": "11:35", "location": "模拟教学楼 A203",
+    "start_week": 1, "end_week": 16, "week_pattern": "all", "custom_weeks": []
+  },
+  {
+    "id": "course-demo-004", "student_id": "student-demo-001",
+    "name": "创新实践", "teacher": "模拟教师丁", "weekday": 2,
+    "start_time": "11:00", "end_time": "12:35", "location": "模拟创新中心 C301",
+    "start_week": 1, "end_week": 16, "week_pattern": "even", "custom_weeks": []
+  },
+  {
+    "id": "course-demo-005", "student_id": "student-demo-001",
+    "name": "高等数学", "teacher": "模拟教师戊", "weekday": 3,
+    "start_time": "08:00", "end_time": "09:35", "location": "模拟教学楼 A102",
+    "start_week": 1, "end_week": 16, "week_pattern": "all", "custom_weeks": []
+  },
+  {
+    "id": "course-demo-006", "student_id": "student-demo-001",
+    "name": "程序设计实验", "teacher": "模拟教师己", "weekday": 4,
+    "start_time": "14:00", "end_time": "16:25", "location": "模拟机房 D401",
+    "start_week": 1, "end_week": 16, "week_pattern": "even", "custom_weeks": []
+  },
+  {
+    "id": "course-demo-007", "student_id": "student-demo-001",
+    "name": "职业生涯规划", "teacher": "模拟教师庚", "weekday": 5,
+    "start_time": "10:00", "end_time": "11:35", "location": "模拟教学楼 A305",
+    "start_week": 1, "end_week": 12, "week_pattern": "odd", "custom_weeks": []
+  },
+  {
+    "id": "course-demo-008", "student_id": "student-demo-001",
+    "name": "竞赛训练工作坊", "teacher": "模拟导师", "weekday": 6,
+    "start_time": "09:00", "end_time": "11:35", "location": "模拟创新中心 C101",
+    "start_week": 1, "end_week": 16, "week_pattern": "custom", "custom_weeks": [3, 6, 9, 12]
+  }
+]

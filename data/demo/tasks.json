@@ -1,0 +1,51 @@
+[
+  {
+    "id": "task-demo-001", "student_id": "student-demo-001", "title": "完成模拟四六级报名",
+    "description": "来自模拟通知 notice-demo-001", "task_type": "registration", "priority": "high",
+    "status": "pending", "due_at": "2026-08-22T18:00:00+08:00", "source_notice_id": "notice-demo-001",
+    "dedupe_key": "student-demo-001:notice-demo-001:registration", "created_at": "2026-08-18T08:06:00+08:00", "completed_at": null
+  },
+  {
+    "id": "task-demo-002", "student_id": "student-demo-001", "title": "预约模拟图书馆培训",
+    "description": "选择培训场次", "task_type": "registration", "priority": "medium",
+    "status": "pending", "due_at": "2026-08-24T18:00:00+08:00", "source_notice_id": "notice-demo-002",
+    "dedupe_key": "student-demo-001:notice-demo-002:registration", "created_at": "2026-08-18T09:05:00+08:00", "completed_at": null
+  },
+  {
+    "id": "task-demo-003", "student_id": "student-demo-001", "title": "提交模拟奖学金材料",
+    "description": "仅用于演示", "task_type": "general", "priority": "critical",
+    "status": "pending", "due_at": "2026-08-28T17:00:00+08:00", "source_notice_id": "notice-demo-003",
+    "dedupe_key": "student-demo-001:notice-demo-003:materials", "created_at": "2026-08-19T10:05:00+08:00", "completed_at": null
+  },
+  {
+    "id": "task-demo-004", "student_id": "student-demo-001", "title": "确认模拟消防演练时间",
+    "description": "日期未明确，需人工确认", "task_type": "general", "priority": "critical",
+    "status": "pending", "due_at": null, "source_notice_id": "notice-demo-004",
+    "dedupe_key": "student-demo-001:notice-demo-004:confirm-time", "created_at": "2026-08-20T11:05:00+08:00", "completed_at": null
+  },
+  {
+    "id": "task-demo-005", "student_id": "student-demo-001", "title": "报名模拟迎新志愿服务",
+    "description": null, "task_type": "activity", "priority": "normal",
+    "status": "completed", "due_at": "2026-08-23T20:00:00+08:00", "source_notice_id": "notice-demo-005",
+    "dedupe_key": "student-demo-001:notice-demo-005:signup", "created_at": "2026-08-20T12:03:00+08:00",
+    "completed_at": "2026-08-20T12:10:00+08:00"
+  },
+  {
+    "id": "task-demo-006", "student_id": "student-demo-001", "title": "提交程序设计实验一",
+    "description": "模拟课程作业", "task_type": "assignment", "priority": "high",
+    "status": "pending", "due_at": "2026-08-27T22:00:00+08:00", "source_notice_id": null,
+    "dedupe_key": "student-demo-001:course-demo-006:assignment-01", "created_at": "2026-08-18T16:30:00+08:00", "completed_at": null
+  },
+  {
+    "id": "task-demo-007", "student_id": "student-demo-001", "title": "复习模拟高等数学测验",
+    "description": "第1至2章", "task_type": "exam", "priority": "medium",
+    "status": "pending", "due_at": "2026-08-26T08:00:00+08:00", "source_notice_id": null,
+    "dedupe_key": "student-demo-001:course-demo-005:quiz-01", "created_at": "2026-08-18T12:00:00+08:00", "completed_at": null
+  },
+  {
+    "id": "task-demo-008", "student_id": "student-demo-001", "title": "参加已取消的模拟讲座",
+    "description": "用于覆盖 cancelled 状态", "task_type": "activity", "priority": "normal",
+    "status": "cancelled", "due_at": "2026-08-21T19:00:00+08:00", "source_notice_id": null,
+    "dedupe_key": "student-demo-001:activity:cancelled-lecture", "created_at": "2026-08-18T13:00:00+08:00", "completed_at": null
+  }
+]
