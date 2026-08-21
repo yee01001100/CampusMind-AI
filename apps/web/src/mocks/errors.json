@@ -1,0 +1,27 @@
+{
+  "error": {
+    "code": "INTERNAL_ERROR",
+    "message": "演示服务暂时不可用",
+    "details": {}
+  },
+  "offline": {
+    "code": "NETWORK_OFFLINE",
+    "message": "网络已断开，请检查连接后重试",
+    "details": {}
+  },
+  "timeout": {
+    "code": "MODEL_UNAVAILABLE",
+    "message": "请求超时，校园 Agent 暂未返回",
+    "details": { "timeout_ms": 8000 }
+  },
+  "tool": {
+    "code": "AGENT_TOOL_FAILED",
+    "message": "课程工具调用失败",
+    "details": { "tool": "get_courses" }
+  },
+  "ambiguous": {
+    "code": "NOTICE_DATE_AMBIGUOUS",
+    "message": "无法确认通知中的年份",
+    "details": { "field": "deadline" }
+  }
+}
