@@ -13,8 +13,8 @@ from uuid import uuid4
 
 from campusmind.tools import CampusToolRegistry, ToolError, ToolResult, ToolTrace
 
-from .deepseek import DeepSeekChatClient, ModelUnavailableError
 from .memory import PreferenceMemory
+from .model_client import ChatModelClient, ModelUnavailableError
 
 
 SHANGHAI = timezone(timedelta(hours=8), name="Asia/Shanghai")
@@ -66,7 +66,7 @@ class RequestExecution:
 
 
 class CampusMindRuntime:
-    """Routes campus intents first and uses DeepSeek only for general chat.
+    """Routes campus intents first and uses an optional model for general chat.
 
     This keeps source-of-truth operations deterministic. A model response can
     never substitute for a failed Tool call.
@@ -77,7 +77,7 @@ class CampusMindRuntime:
         tools: CampusToolRegistry,
         *,
         memory: PreferenceMemory | None = None,
-        model: DeepSeekChatClient | None = None,
+        model: ChatModelClient | None = None,
         max_total_tool_calls: int = 4,
         max_identical_tool_calls: int = 1,
         model_timeout_seconds: float = 20.0,
@@ -384,6 +384,9 @@ class CampusMindRuntime:
         execution: RequestExecution,
         cancel_event: asyncio.Event | None,
     ) -> AgentResponse:
+        assert self.model is not None
+        provider = self.model.provider
+        trace_name = f"{provider.replace('-', '_')}_chat"
         started_at = datetime.now(SHANGHAI).isoformat()
         start = perf_counter()
         try:
@@ -417,7 +420,7 @@ class CampusMindRuntime:
                 await asyncio.gather(waiter, return_exceptions=True)
             content = await model_call
             trace = ToolTrace(
-                name="deepseek_chat",
+                name=trace_name,
                 started_at=started_at,
                 status="success",
                 duration_ms=max(0, round((perf_counter() - start) * 1000)),
@@ -428,23 +431,27 @@ class CampusMindRuntime:
                 message=content,
                 request_id=request.request_id,
                 traces=tuple(execution.traces),
-                runtime_mode="deepseek",
+                runtime_mode=provider,
             )
         except asyncio.CancelledError:
             execution.traces.append(
                 ToolTrace(
-                    name="deepseek_chat",
+                    name=trace_name,
                     started_at=started_at,
                     status="interrupted",
                     duration_ms=max(0, round((perf_counter() - start) * 1000)),
                     error_code="MODEL_UNAVAILABLE",
                 )
             )
-            return _interrupted_response(request.request_id, tuple(execution.traces))
+            return _interrupted_response(
+                request.request_id,
+                tuple(execution.traces),
+                runtime_mode=provider,
+            )
         except ModelUnavailableError:
             execution.traces.append(
                 ToolTrace(
-                    name="deepseek_chat",
+                    name=trace_name,
                     started_at=started_at,
                     status="timeout",
                     duration_ms=max(0, round((perf_counter() - start) * 1000)),
@@ -456,10 +463,12 @@ class CampusMindRuntime:
                 message="在线模型当前不可用，我没有伪造回复。校园工具仍可单独使用。",
                 request_id=request.request_id,
                 error=ToolError(
-                    "MODEL_UNAVAILABLE", "DeepSeek 模型不可用或超时", {}
+                    "MODEL_UNAVAILABLE",
+                    "在线模型不可用或超时",
+                    {"provider": provider},
                 ),
                 traces=tuple(execution.traces),
-                runtime_mode="deepseek",
+                runtime_mode=provider,
             )
 
     async def stream_chat(
@@ -616,7 +625,10 @@ def _append_immediate_trace(
 
 
 def _interrupted_response(
-    request_id: str, traces: tuple[ToolTrace, ...] = ()
+    request_id: str,
+    traces: tuple[ToolTrace, ...] = (),
+    *,
+    runtime_mode: str = "local-rules",
 ) -> AgentResponse:
     return AgentResponse(
         ok=False,
@@ -626,4 +638,5 @@ def _interrupted_response(
             "AGENT_TOOL_FAILED", "请求已中断", {"reason": "interrupted"}
         ),
         traces=traces,
+        runtime_mode=runtime_mode,
     )

@@ -36,7 +36,7 @@
 
 | 人机搭档 | 负责范围 | 分支 | 状态 |
 | --- | --- | --- | --- |
-| Agent 1 | Runtime、Tool、DeepTutor/DeepSeek 适配 | `agent/1-runtime` | 完成 |
+| Agent 1 | Runtime、Tool、DeepTutor/多模型 Provider 适配 | `agent/1-runtime` | 完成 |
 | Agent 2 | Domain、SQLite、演示数据、RAG | `agent/2-data-rag` | 完成 |
 | Agent 3 | Service、FastAPI、错误响应 | `agent/3-service-api` | 完成 |
 | Agent 4 | React/Vite H5、Mock、响应式与浏览器 QA | `agent/4-web` | 完成 |
@@ -55,7 +55,10 @@ flowchart LR
     Services --> SQLite["SQLite Repository"]
     Runtime --> RAG["本地词法 RAG"]
     RAG --> SQLite
-    Runtime -. "可选" .-> DeepSeek["DeepSeek Transport"]
+    Runtime -. "可选" .-> Providers["模型 Provider"]
+    Providers --> DeepSeek["DeepSeek"]
+    Providers --> OpenAI["OpenAI / OpenAI-compatible"]
+    Providers --> Anthropic["Anthropic Messages API"]
 ```
 
 正式集成入口是 `apps.api.integration:app`。`apps.api.main:app` 只用于 Agent 3 的可替换内存仓库切片，不代表完整项目。
@@ -112,16 +115,55 @@ npm run dev
 
 ## 可选模型配置
 
-项目不要求模型 Key 才能启动。Day 0 安全规则禁止凭据变量出现在可提交模板中。需要试验 DeepSeek 时，只能把一个新生成且未泄露的 Key 手动加入本机 `.env`：
+项目不要求模型 Key 才能启动，默认且推荐的演示模式是 `CAMPUSMIND_MODEL_MODE=local-rules`。系统不会根据环境里偶然存在的 Key 自动推断 Provider；只有显式选择模式并提供该模式所需配置时，才会启用在线模型。缺少对应 Key、模型名或必要 URL 时，启动会直接给出明确错误。
+
+Day 0 安全规则禁止凭据变量名出现在可提交的 `.env.example`，所以下列配置只能写进已被 Git 忽略的本机根目录 `.env`。四种在线模式任选一种，不要混用。
+
+### DeepSeek
 
 ```dotenv
-DEEPSEEK_API_KEY=
+CAMPUSMIND_MODEL_MODE=deepseek
+DEEPSEEK_API_KEY=<新生成且未泄露的 Key>
 DEEPSEEK_BASE_URL=https://api.deepseek.com
 DEEPSEEK_MODEL=deepseek-chat
-CAMPUSMIND_MODEL_MODE=deepseek
 ```
 
-只有 `CAMPUSMIND_MODEL_MODE=deepseek` 与有效 Key 同时存在时，集成入口才会启用在线模型。不要把 Key 放入 `VITE_*` 变量；Vite 会把这些变量暴露给浏览器。任何曾发到聊天、截图、Issue 或提交记录里的 Key 都应立即撤销并轮换。
+### OpenAI 标准 API
+
+```dotenv
+CAMPUSMIND_MODEL_MODE=openai
+OPENAI_API_KEY=<本机 Key>
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_MODEL=<账户实际可用的模型名>
+```
+
+### 通用 OpenAI-compatible 网关
+
+```dotenv
+CAMPUSMIND_MODEL_MODE=openai-compatible
+MODEL_API_KEY=<网关 Key>
+MODEL_BASE_URL=https://provider.example/v1
+MODEL_NAME=<网关支持的模型名>
+```
+
+该模式调用 OpenAI Chat Completions 协议，并要求响应正文位于字符串字段 `choices[0].message.content`。如果服务商只支持 Responses API、自定义流式事件或非字符串多模态内容，需要另写适配器。
+
+### Anthropic 原生 API
+
+```dotenv
+CAMPUSMIND_MODEL_MODE=anthropic
+ANTHROPIC_API_KEY=<本机 Key>
+ANTHROPIC_BASE_URL=https://api.anthropic.com/v1
+ANTHROPIC_MODEL=<账户实际可用的 Claude 模型名>
+ANTHROPIC_VERSION=2023-06-01
+ANTHROPIC_MAX_TOKENS=1024
+```
+
+Anthropic 模式使用原生 Messages API：`system` 消息会提升到请求顶层，响应只拼接 `content` 中的文本块，不暴露 thinking 块。
+
+所有 `BASE_URL` 都必须填写 API 根路径：OpenAI 示例到 `/v1`，Anthropic 示例到 `/v1`，不要再附加 `/chat/completions` 或 `/messages`。Key 必须和对应服务商的 Base URL 配套；不要把 Key 放入 `VITE_*`，因为 Vite 会把变量暴露给浏览器。任何曾发到聊天、截图、Issue 或提交记录里的 Key 都应立即撤销并轮换。
+
+本轮四类 Provider 均通过 Fake Transport 验证请求格式、认证头、响应解析、超时和错误处理，没有使用真实 Key 做在线调用。
 
 ## 演示流程
 
@@ -189,7 +231,7 @@ CampusMind-AI/
 ├─ campusmind/domain/        # 公共领域模型
 ├─ campusmind/repositories/  # SQLite Repository
 ├─ campusmind/services/      # 通知、课表、任务、提醒业务
-├─ campusmind/integrations/  # DeepTutor/DeepSeek 适配
+├─ campusmind/integrations/  # DeepTutor 与多模型 Provider 适配
 ├─ campusmind/tools/         # Agent Tool 注册与调用
 ├─ campusmind/storage/       # 建库和演示数据导入
 ├─ data/demo/                # 明确标记的模拟业务数据
@@ -202,7 +244,8 @@ CampusMind-AI/
 ## 已知限制
 
 - 当前未安装或修改 DeepTutor 上游核心；公开 Host 桥已用 Fake Host 验证。无 Key 时 Runtime 明确显示 `local-rules`。
-- DeepSeek Transport 由 Fake Transport 自动测试；最终发布验收显式清空 Key，仅以 `local-rules` 结果为准，未把在线模型响应当成交付证据。
+- DeepSeek、OpenAI、OpenAI-compatible 和 Anthropic Transport 均由 Fake Transport 自动测试；未使用真实 Key 做在线验收，在线可用性不属于本轮交付证据。
+- OpenAI-compatible 当前只适配 Chat Completions 的字符串响应，不等同于兼容所有 OpenAI API 或多模态格式。
 - RAG 是本地字符二元组词法检索，不是 embedding 或向量数据库；默认排除已过期资料。
 - 所有校园数据和资料均为模拟，不连接真实教务、统一身份认证或消息推送平台。
 - Reminder 已完成规则、持久化、到期查询、停止和恢复；生产级后台调度器与手机推送不在此 MVP 内。

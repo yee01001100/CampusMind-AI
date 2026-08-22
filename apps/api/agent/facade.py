@@ -3,14 +3,19 @@
 from __future__ import annotations
 
 import asyncio
+import os
 from typing import Any, AsyncIterator, Mapping
 from uuid import uuid4
 
 from campusmind.integrations.deeptutor import (
     AgentRequest,
+    AnthropicChatClient,
+    AnthropicConfig,
     CampusMindRuntime,
     DeepSeekChatClient,
     DeepSeekConfig,
+    OpenAICompatibleChatClient,
+    OpenAICompatibleConfig,
     PreferenceMemory,
 )
 from campusmind.tools import CampusService, CampusToolRegistry
@@ -22,19 +27,42 @@ def build_agent_runtime(
     environ: Mapping[str, str] | None = None,
     model_transport: Any = None,
 ) -> CampusMindRuntime:
-    """Build the runtime without requiring a model key.
+    """Build the runtime with an explicit, optional model provider.
 
-    Agent 3 can call this during application startup. With no
-    ``DEEPSEEK_API_KEY`` the returned runtime remains a truthful local-rules
-    runtime. ``model_transport`` exists for dependency injection in tests.
+    ``CAMPUSMIND_MODEL_MODE`` defaults to ``local-rules`` and never infers a
+    provider from a stray key. ``model_transport`` is dependency injection for
+    protocol tests; production uses the standard-library HTTPS transport.
     """
 
-    config = DeepSeekConfig.from_env(environ)
-    model = (
-        DeepSeekChatClient(config, transport=model_transport)
-        if config is not None
-        else None
-    )
+    values = os.environ if environ is None else environ
+    mode = values.get("CAMPUSMIND_MODEL_MODE", "local-rules").strip().lower()
+    if mode == "local-rules":
+        model = None
+    elif mode == "deepseek":
+        config = DeepSeekConfig.from_env(values)
+        if config is None:
+            raise ValueError("DEEPSEEK_API_KEY is required for deepseek mode")
+        model = DeepSeekChatClient(config, transport=model_transport)
+    elif mode == "openai":
+        config = OpenAICompatibleConfig.from_openai_env(values)
+        if config is None:
+            raise ValueError("OPENAI_API_KEY is required for openai mode")
+        model = OpenAICompatibleChatClient(config, transport=model_transport)
+    elif mode == "openai-compatible":
+        config = OpenAICompatibleConfig.from_compatible_env(values)
+        if config is None:
+            raise ValueError("MODEL_API_KEY is required for openai-compatible mode")
+        model = OpenAICompatibleChatClient(config, transport=model_transport)
+    elif mode == "anthropic":
+        config = AnthropicConfig.from_env(values)
+        if config is None:
+            raise ValueError("ANTHROPIC_API_KEY is required for anthropic mode")
+        model = AnthropicChatClient(config, transport=model_transport)
+    else:
+        raise ValueError(
+            "CAMPUSMIND_MODEL_MODE must be local-rules, deepseek, openai, "
+            "openai-compatible, or anthropic"
+        )
     return CampusMindRuntime(
         CampusToolRegistry(service), memory=PreferenceMemory(), model=model
     )

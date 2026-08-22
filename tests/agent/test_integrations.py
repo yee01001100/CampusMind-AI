@@ -89,7 +89,10 @@ def test_runtime_uses_deepseek_only_for_general_chat() -> None:
     transport = FakeTransport()
     runtime = build_agent_runtime(
         FakeCampusService(),
-        environ={"DEEPSEEK_API_KEY": "test-key-not-a-secret"},
+        environ={
+            "CAMPUSMIND_MODEL_MODE": "deepseek",
+            "DEEPSEEK_API_KEY": "test-key-not-a-secret",
+        },
         model_transport=transport,
     )
     response = run(
@@ -111,7 +114,10 @@ def test_campus_intent_does_not_send_source_of_truth_request_to_model() -> None:
     transport = FakeTransport()
     runtime = build_agent_runtime(
         FakeCampusService(),
-        environ={"DEEPSEEK_API_KEY": "test-key-not-a-secret"},
+        environ={
+            "CAMPUSMIND_MODEL_MODE": "deepseek",
+            "DEEPSEEK_API_KEY": "test-key-not-a-secret",
+        },
         model_transport=transport,
     )
     response = run(

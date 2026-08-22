@@ -275,11 +275,18 @@ def create_integrated_app(
 ):
     env = os.environ if environ is None else environ
     model_mode = env.get("CAMPUSMIND_MODEL_MODE", "local-rules").strip().lower()
-    if model_mode not in {"local-rules", "deepseek"}:
-        raise ValueError("CAMPUSMIND_MODEL_MODE must be local-rules or deepseek")
-    runtime_env = dict(env)
-    if model_mode == "local-rules":
-        runtime_env.pop("DEEPSEEK_API_KEY", None)
+    supported_modes = {
+        "local-rules",
+        "deepseek",
+        "openai",
+        "openai-compatible",
+        "anthropic",
+    }
+    if model_mode not in supported_modes:
+        raise ValueError(
+            "CAMPUSMIND_MODEL_MODE must be local-rules, deepseek, openai, "
+            "openai-compatible, or anthropic"
+        )
     selected_database = _resolve_path(
         database_path or env.get("CAMPUSMIND_DB_PATH", "data/local/campusmind.db")
     )
@@ -290,7 +297,7 @@ def create_integrated_app(
     )
     repository = SQLiteServiceRepository(database)
     tool_service = IntegratedCampusService(repository, RAGRetriever(database), clock=clock)
-    runtime = build_agent_runtime(tool_service, environ=runtime_env)
+    runtime = build_agent_runtime(tool_service, environ=env)
     chat = IntegratedChatFacade(AgentChatFacade(runtime), clock=clock)
     api = create_app(repository=repository, chat_facade=chat, clock=clock)
     api.state.database = database

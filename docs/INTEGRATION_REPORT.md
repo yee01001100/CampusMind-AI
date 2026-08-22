@@ -1,6 +1,6 @@
 # CampusMind AI 集成报告
 
-日期：2026-08-21
+日期：2026-08-22
 
 分支：`agent/0-integration`
 
@@ -12,7 +12,7 @@
 
 四个子 Agent 已按 Data → Service/API → Runtime → Web 的顺序合并。SQLite、业务 Service、五个 Agent Tool、本地 RAG、FastAPI 和 React H5 已形成一个可启动、可测试的本地 MVP。
 
-代码级 P0/P1 问题已清零，Python、Web、构建、Mock 浏览器 QA 和真实 API 浏览器 QA 均通过。所有真实浏览器 QA 使用模拟校园数据；最终真实联调进程显式清空 `DEEPSEEK_API_KEY`，运行模式为 `local-rules`。
+代码级 P0/P1 问题已清零，Python、Web、构建、Mock 浏览器 QA 和真实 API 浏览器 QA 均通过。所有真实浏览器 QA 使用模拟校园数据；最终真实联调进程运行模式为 `local-rules`，不会根据环境中偶然存在的 Provider Key 自动启用在线模型。
 
 ## 2. 合并记录
 
@@ -60,6 +60,21 @@
 - 测试环境强制 Mock，避免本机 `.env.local` 污染单元测试。
 - 正式演示使用 `VITE_USE_MOCKS=false`。
 
+### 3.3 可选模型 Provider
+
+Runtime 保留无 Key 可运行的 `local-rules` 默认模式，并通过 `CAMPUSMIND_MODEL_MODE` 显式选择以下在线 Provider：
+
+| 模式 | 协议 | 配置前缀 | Runtime Trace |
+| --- | --- | --- | --- |
+| `deepseek` | OpenAI Chat Completions 兼容接口 | `DEEPSEEK_*` | `deepseek_chat` |
+| `openai` | OpenAI Chat Completions | `OPENAI_*` | `openai_chat` |
+| `openai-compatible` | 通用 Chat Completions 网关 | `MODEL_*` | `openai_compatible_chat` |
+| `anthropic` | Anthropic Messages API | `ANTHROPIC_*` | `anthropic_chat` |
+
+共享模型 Client Protocol 与无 SDK 的 JSON Transport 负责消息校验、HTTP JSON 请求、超时和统一不可用错误。DeepSeek 保留原公共接口，内部复用 OpenAI-compatible Client；Anthropic 适配器会把 system 消息移到顶层，只读取文本 content 块。所有 Base URL 都按 API 根路径解释，再由 Client 追加 `/chat/completions` 或 `/messages`。
+
+本轮只用 Fake Transport 验证请求 URL、认证头、payload、响应解析、超时、异常映射和 Provider Trace。用户暂不创建 OpenAI/Anthropic Key，因此没有真实在线请求，也没有把任何在线响应当作验收证据。
+
 ## 4. Agent 0 修复的问题
 
 | 级别 | 问题 | 修复与回归 |
@@ -74,23 +89,24 @@
 | P2 | Planner “今天截止”、页面日期和冲突为硬编码 | 使用 `Asia/Shanghai` 动态日期并按真实课程计算冲突 |
 | P2 | 浏览器自动请求图标产生 404 控制台错误 | 增加内嵌 SVG favicon；真实 QA 控制台错误为 0 |
 | P2 | `.env.local` 的真实模式污染 Vitest | `MODE=test` 固定使用 Mock；22 个 Web 测试恢复稳定 |
-| P1 | 系统环境残留 Key 会让集成入口自动进入在线模型 | 增加 `CAMPUSMIND_MODEL_MODE` 显式开关，默认移除 Runtime 可见 Key；回归测试确认仍为 local-rules |
+| P1 | 系统环境残留 Key 会让集成入口自动进入在线模型 | 增加 `CAMPUSMIND_MODEL_MODE` 显式开关，默认模式不读取任何 Provider Key；回归测试确认仍为 local-rules |
+| P1 | Runtime 只能选择 DeepSeek，无法接入其他主流模型协议 | 增加 OpenAI、通用 OpenAI-compatible 与 Anthropic Messages 适配器；Fake Transport 覆盖请求和响应协议 |
 
 ## 5. 自动验收
 
-以下结果来自 2026-08-21 的最终工作树：
+2026-08-22 多 Provider 增量完成后，重新执行 Python 全量测试、Day 0、Contract、依赖检查、Web 单测和生产构建。Web 源码未改，因此两项浏览器 QA 沿用 2026-08-21 的集成验收记录，不把它们表述为本轮重跑结果。
 
 | 命令 | Exit | 结果 |
 | --- | ---: | --- |
-| `.venv\Scripts\python.exe -m pip install -e ".[dev]"` | 0 | 根 `pyproject.toml` 可编辑安装成功 |
-| `.venv\Scripts\python.exe -m pytest -q` | 0 | `161 passed`，`0 failed`，1 条第三方弃用警告 |
+| `.venv\Scripts\python.exe -m pip install -e ".[dev]"` | 0 | 2026-08-21：根 `pyproject.toml` 可编辑安装成功 |
+| `.venv\Scripts\python.exe -m pytest -q` | 0 | `172 passed`，`0 failed`，1 条第三方弃用警告 |
 | `.venv\Scripts\python.exe scripts\check_day0.py` | 0 | PASS，Python 3.12 |
 | `.venv\Scripts\python.exe scripts\check_contracts.py` | 0 | 5 个模型样例和 2 个 API envelope 通过 |
 | `.venv\Scripts\python.exe -m pip check` | 0 | No broken requirements |
 | `npm test -- --reporter=dot` | 0 | `22 passed`，`0 failed` |
 | `npm run build` | 0 | TypeScript + Vite 构建，43 modules |
-| `npm run qa:browser` | 0 | Mock 模式三尺寸、四页面、长文本和完整流程通过 |
-| `npm run qa:real` | 0 | 真实 API 三尺寸、四页面、0 横向溢出、0 控制台错误；通知→任务→RAG 来源通过 |
+| `npm run qa:browser` | 0 | 2026-08-21：Mock 模式三尺寸、四页面、长文本和完整流程通过 |
+| `npm run qa:real` | 0 | 2026-08-21：真实 API 三尺寸、四页面、0 横向溢出、0 控制台错误；通知→任务→RAG 来源通过 |
 
 第三方警告来自 FastAPI `TestClient` 对当前 `httpx` 路径的弃用提示，不影响测试结果；后续依赖升级时应跟踪 FastAPI/Starlette 的推荐替代方案。
 
@@ -138,20 +154,22 @@
 - `.env`、`.env.local`、SQLite 运行库和 QA 截图均被忽略。
 - 可提交的 `.env.example` 不包含任何凭据变量名，符合 Day 0 安全检查。
 - 前端 `VITE_*` 不包含模型密钥。
-- 集成入口默认 `CAMPUSMIND_MODEL_MODE=local-rules`，会移除 Runtime 可见 Key；最终真实 QA 也显式清空 Key。
+- 集成入口默认 `CAMPUSMIND_MODEL_MODE=local-rules`，不会根据任意 Provider Key 自动推断或启用在线模式。
+- DeepSeek、OpenAI、OpenAI-compatible 和 Anthropic 的测试全部使用 Fake Transport；本轮没有真实模型网络请求。
 - 演示资料全部使用模拟描述，不含真实学生隐私、校园账号、Cookie 或密码。
 - 发布前凭据签名扫描命中文件为 0；提交时只显式暂存本报告列出的项目文件。
 
 ## 9. 已知限制
 
 1. 未安装或修改 DeepTutor 上游核心；公开 Host 桥用 Fake Host 验证。
-2. DeepSeek Transport 由 Fake Transport 测试；在线模型响应不是本次交付证据。
-3. RAG 是本地字符二元组词法检索，不是向量检索；默认排除过期资料。
-4. 所有校园数据是模拟数据，不连接真实教务、认证或消息推送平台。
-5. Reminder 没有生产级常驻后台调度器；MVP 提供持久化、到期查询、停止和恢复。
-6. 演示学期起始日和部分资料日期固定在 2026 年 8 月；真实部署前需配置化并更新数据。
-7. CORS 只允许本地 `5173` 和 QA `4173`。
-8. Demo 视频、PPT 和答辩录屏属于比赛展示物料，不在本代码分支内生成。
+2. DeepSeek、OpenAI、OpenAI-compatible 和 Anthropic Transport 均由 Fake Transport 测试；未使用真实 Key 进行在线验收。
+3. OpenAI-compatible 当前只支持 Chat Completions 的字符串 `choices[0].message.content` 响应；不覆盖 Responses API、自定义流式协议或多模态内容。
+4. RAG 是本地字符二元组词法检索，不是向量检索；默认排除过期资料。
+5. 所有校园数据是模拟数据，不连接真实教务、认证或消息推送平台。
+6. Reminder 没有生产级常驻后台调度器；MVP 提供持久化、到期查询、停止和恢复。
+7. 演示学期起始日和部分资料日期固定在 2026 年 8 月；真实部署前需配置化并更新数据。
+8. CORS 只允许本地 `5173` 和 QA `4173`。
+9. Demo 视频、PPT 和答辩录屏属于比赛展示物料，不在本代码分支内生成。
 
 ## 10. 发布边界
 
